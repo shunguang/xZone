@@ -9,5 +9,16 @@ b) install openDDS
 	i) choose debug and release x64 to build
 	ii) build solution: first time has some errors
 	iii) then build the solution again all the errors are gone)
+
+ 2. in linux
+ a) ~/pkg$ git clone https://github.com/OpenDDS/OpenDDS.git
+ b) cd OpenDDS
+ c) ~/pkg/OpenDDS$ ./configure (To enable Java bindings, use ./configure --java)
+ d) ~/pkg/OpenDDS$ make
+    ~/pkg/OpenDDS$ sudo make install INSTALL_PREFIX=/usr/local
+ e) run samples
+    1) source setenv.sh
+    2) cd DevGuideExamples/DCPS/Messenger for C++ example or cd java/tests/messenger for Java example
+    3)./run_test.pl
   
   
