@@ -1,0 +1,6 @@
+IPC mechanisms:
+  message queues
+  semaphores 
+  shared memory
+  
+Shared memory is a feature supported by UNIX System V, including Linux, SunOS and Solaris  
