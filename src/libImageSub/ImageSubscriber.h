@@ -22,10 +22,12 @@
 #include <fastdds/dds/subscriber/DataReaderListener.hpp>
 #include <fastrtps/subscriber/SampleInfo.h>
 #include <fastdds/dds/core/status/SubscriptionMatchedStatus.hpp>
+#include <fastdds/dds/domain/DomainParticipantListener.hpp>
 
 #include <boost/filesystem.hpp>
 #include "libUtil/Util.h"
 
+using namespace eprosima::fastdds::dds;
 class ImageSubscriber {
 public:
   
@@ -56,6 +58,15 @@ private:
     eprosima::fastdds::dds::DataReader* reader_;
 
     eprosima::fastdds::dds::TypeSupport type_;
+
+    eprosima::fastdds::dds::StatusMask p_mask_;
+
+    class SubParticipantListener : public DomainParticipantListener {
+  
+        void on_data_on_readers(eprosima::fastdds::dds::Subscriber* subscriber) override;
+
+        
+    } subParticipantListener_;
 
     class SubListener : public eprosima::fastdds::dds::DataReaderListener
     {
@@ -115,6 +126,7 @@ private:
 
         int matched_;
       
+        
 
         uint32_t samples_;
 
@@ -123,7 +135,41 @@ private:
 
         app::AppMeanStd<uint32_t> latencyStat_;
     } listener_;
+
+
+    class CustomDomainParticipantListener : public eprosima::fastdds::dds::DomainParticipantListener
+    {
+    public:
+
+        CustomDomainParticipantListener();
+
+        ~CustomDomainParticipantListener() override;
+
+
+        void on_data_available(
+            eprosima::fastdds::dds::DataReader* reader) override;
+
+
+        void on_subscription_matched(
+            eprosima::fastdds::dds::DataReader* reader,
+            const eprosima::fastdds::dds::SubscriptionMatchedStatus& info) override;
+
+        Image image_;
+
+        int matched_ = 0;
+
+        bool firstConnected_ = false;
+
+        uint32_t samples_ = 0;
+    } participant_listener_;
+
+    void runThread();
+    void runThread(int i);
+
+   // eprosima::fastdds::dds::TypeSupport type_;
 };
+
+
 
 void createImageSubscriber(app::CfgPtr cfg, bool use_environment_qos);
 

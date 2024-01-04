@@ -46,7 +46,6 @@ int main(int argc, char* argv[])
 	imageSubscriberThread.join();
 	//temperatureSubscriberThread.join();
 
-
 	endLogThread();
 
 	//Domain::stopAll();

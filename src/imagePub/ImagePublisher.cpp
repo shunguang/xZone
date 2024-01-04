@@ -24,10 +24,10 @@
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
 
 #include <thread>
+#include <chrono>
 #include <list>
 
 #include <iostream>
-using namespace eprosima::fastdds::rtps;
 
 using namespace eprosima::fastdds::dds;
 using namespace eprosima::fastdds::rtps;
@@ -78,8 +78,12 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
   //  std::cout << "in ImagePublisher::init" << std::endl;
     
     DomainParticipantQos participant_qos = PARTICIPANT_QOS_DEFAULT;
-    participant_qos.name("ImagePublisher");
+ 
 
+    participant_qos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
+    participant_qos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = eprosima::fastrtps::Duration_t(5, 0);
+    participant_qos.name("ImagePublisher");
+    participant_qos.transport().use_builtin_transports = false;
 
     PublishModeQosPolicy publish_mode;
      
@@ -97,42 +101,50 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     stop_ = false;
    
     // acts like server
-    std::string wan_ip = "127.0.0.1";
-    unsigned short port = 5100;
+    //std::string wan_ip = "127.0.0.1";
+    //unsigned short port = 5100;
 
     switch (cfg->getTransport()) {
        
-    case Transport::TCP: {
-        //std::cout << "Using TCP as transport" << std::endl;
-        std::shared_ptr<TCPv4TransportDescriptor> tcp_transport = std::make_shared<TCPv4TransportDescriptor>();
-        tcp_transport->add_listener_port(5100);
-        tcp_transport->set_WAN_address("127.0.0.1");
-        // Link the Transport Layer to the Participant.
-        participant_qos.transport().user_transports.push_back(tcp_transport);
-        participant_qos.transport().use_builtin_transports = false;
-        tcp_transport->enable_tcp_nodelay = true;
-        break;
-    }
-    case Transport::UDP: {
-        //std::cout << "Using UDP as transport" << std::endl;
-        std::shared_ptr<UDPv4TransportDescriptor> udp_transport = std::make_shared<UDPv4TransportDescriptor>();
-        udp_transport->non_blocking_send = true;
+    case 1: {
+       // std::cout << "Using TCP as transport" << std::endl;
+        std::shared_ptr<TCPv4TransportDescriptor> descriptor = std::make_shared<TCPv4TransportDescriptor>();
+       // descriptor->sendBufferSize = 0;
+       // descriptor->receiveBufferSize = 0;
+
+        descriptor->add_listener_port(5100);
+        descriptor->set_WAN_address("127.0.0.1");
+        descriptor->enable_tcp_nodelay = true;
 
         // Link the Transport Layer to the Participant.
-        participant_qos.transport().user_transports.push_back(udp_transport);
+        participant_qos.transport().user_transports.push_back(descriptor);
+  
+        break;
+    }
+    case 2: {
+        //std::cout << "Using UDP as transport" << std::endl;
+        std::shared_ptr<UDPv4TransportDescriptor> descriptor = std::make_shared<UDPv4TransportDescriptor>();
+       // descriptor->sendBufferSize = 0;
+       // descriptor->receiveBufferSize = 0;
+       // descriptor->non_blocking_send = true;
+
+        // Link the Transport Layer to the Participant.
+        participant_qos.transport().user_transports.push_back(descriptor);
         // Set use_builtin_transports to false
         participant_qos.transport().use_builtin_transports = false;
         
         break;
     }
-    case Transport::SharedMemory: {
+    case 3: {
         //std::cout << "Using Shared memory as transport" << std::endl;
 
         // Create a descriptor for the new transport.
-        std::shared_ptr<SharedMemTransportDescriptor> shm_transport = std::make_shared<SharedMemTransportDescriptor>();
+        std::shared_ptr<SharedMemTransportDescriptor> descriptor = std::make_shared<SharedMemTransportDescriptor>();
+        //descriptor->sendBufferSize = 0;
+        //descriptor->receiveBufferSize = 0;
 
-        // Link the Transport Layer to the Participant.
-        participant_qos.transport().user_transports.push_back(shm_transport);
+    // Link the Transport Layer to the Participant.
+        participant_qos.transport().user_transports.push_back(descriptor);
         participant_qos.transport().use_builtin_transports = false;
         break;
     }
@@ -149,24 +161,29 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     }
 
     // Limit to 300kb per second.
-    static const char* flow_controller_name = FASTDDS_FLOW_CONTROLLER_DEFAULT;
-    //"example_flow_controller";
-    auto flow_control_300k_per_sec = std::make_shared
-        <eprosima::fastdds::rtps::FlowControllerDescriptor>();
-    flow_control_300k_per_sec->name = flow_controller_name;
-    flow_control_300k_per_sec->scheduler = 
-        eprosima::fastdds::rtps::FlowControllerSchedulerPolicy::FIFO;
-    //flow_control_300k_per_sec->max_bytes_per_period = 300 * 1000;
-    //0 value means no limit. 
-    flow_control_300k_per_sec->max_bytes_per_period = 0;
-    flow_control_300k_per_sec->period_ms = 1000;
-    // Register flow controller on participant
-    
-    participant_qos.flow_controllers().push_back(flow_control_300k_per_sec);
+    //static const char* flow_controller_name = FASTDDS_FLOW_CONTROLLER_DEFAULT;
+    ////"example_flow_controller";
+    //auto flow_control_300k_per_sec = std::make_shared
+    //    <eprosima::fastdds::rtps::FlowControllerDescriptor>();
+    //flow_control_300k_per_sec->name = flow_controller_name;
+    //flow_control_300k_per_sec->scheduler = 
+    //    eprosima::fastdds::rtps::FlowControllerSchedulerPolicy::FIFO;
+    ////flow_control_300k_per_sec->max_bytes_per_period = 300 * 1000;
+    ////0 value means no limit. 
+    //flow_control_300k_per_sec->max_bytes_per_period = 0;
+    //flow_control_300k_per_sec->period_ms = 1000;
+    //// Register flow controller on participant
+    //
+    //participant_qos.flow_controllers().push_back(flow_control_300k_per_sec);
     // .... create participant and publisher
    
     //std::cout << "trying to create participant" << std::endl;
+
+   
+
+   // participant_ = DomainParticipantFactory::get_instance()->create_participant(0, participant_qos, &participant_listener_);
     participant_ = DomainParticipantFactory::get_instance()->create_participant(0, participant_qos);
+
     //std::cout << "created participant" << std::endl;
     
     if (participant_ == nullptr)
@@ -186,13 +203,15 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     publisher_ = participant_->create_publisher(
         pubqos,
         nullptr);
+    publisher_->wait_for_acknowledgments(eprosima::fastrtps::c_TimeInfinite);
     if (publisher_ == nullptr)
     {
         return false;
     }
 
     //CREATE THE TOPIC
-    topic_ = participant_->create_topic("ImageTopic",
+    topic_ = participant_->create_topic(
+        "ImageTopic",
         "Image", TOPIC_QOS_DEFAULT);
 
     if (topic_ == nullptr)
@@ -203,25 +222,29 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     // CREATE THE WRITER
     DataWriterQos wqos = DATAWRITER_QOS_DEFAULT;
 
-    if (use_env)
+    if (false)
     {
         publisher_->get_default_datawriter_qos(wqos);
     }
-  //  wqos.history().kind = KEEP_LAST_HISTORY_QOS;
- //   wqos.history().depth = 30;
- //   wqos.resource_limits().max_samples = 50;
- //   wqos.resource_limits().allocated_samples = 20;
+    
+    wqos.history().kind = KEEP_LAST_HISTORY_QOS;
+    wqos.history().depth = 30;
+    wqos.resource_limits().max_samples = 50;
+    wqos.resource_limits().allocated_samples = 20;
     wqos.reliable_writer_qos().times.heartbeatPeriod.seconds = 2;
     wqos.reliable_writer_qos().times.heartbeatPeriod.nanosec = 200 * 1000 * 1000;
     wqos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+    
+    //wqos.publish_mode().kind = ASYNCHRONOUS_PUBLISH_MODE;
 
     // Link writer to the registered flow controller.
    // Note that ASYNCHRONOUS_PUBLISH_MODE must be used
 
-    //the asynch does not work.
-    wqos.publish_mode().kind = ASYNCHRONOUS_PUBLISH_MODE;
-    wqos.publish_mode().flow_controller_name = flow_controller_name;
+    ////the asynch does not work.
+    //wqos.publish_mode().kind = ASYNCHRONOUS_PUBLISH_MODE;
+    //wqos.publish_mode().flow_controller_name = flow_controller_name;
 
+   // writer_ = publisher_->create_datawriter(topic_, wqos, &listener_, StatusMask::all());
     writer_ = publisher_->create_datawriter(topic_, wqos, &listener_);
 
 
@@ -229,7 +252,7 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     {
         return false;
     }
-
+    std::cout << "create_datawriter " << &image_.frame_number() << std::endl;
     return true;
 }
 
@@ -252,7 +275,7 @@ ImagePublisher::~ImagePublisher()
     }
     DomainParticipantFactory::get_instance()->delete_participant(participant_);
 
-    //std::cout << "delete_participant." << std::endl;
+   // std::cout << "delete_participant." << std::endl;
 
 }
 
@@ -310,6 +333,28 @@ void ImagePublisher::PubListener::on_publication_matched(
     {
         std::cout << info.current_count_change
                   << " is not a valid value for PublicationMatchedStatus current count change" << std::endl;
+    }
+}
+
+void ImagePublisher::CustomDomainParticipantListener::on_publication_matched(
+    DataWriter*,
+    const PublicationMatchedStatus& info)
+{
+    if (info.current_count_change == 1)
+    {
+        matched_ = info.total_count;
+        firstConnected_ = true;
+        std::cout << "(CustomDomainParticipantListener) Publisher matched." << std::endl;
+    }
+    else if (info.current_count_change == -1)
+    {
+        matched_ = info.total_count;
+        std::cout << "(CustomDomainParticipantListener) Publisher unmatched." << std::endl;
+    }
+    else
+    {
+        std::cout << info.current_count_change
+            << " is not a valid value for PublicationMatchedStatus current count change" << std::endl;
     }
 }
 
@@ -404,6 +449,7 @@ void ImagePublisher::acqImgMsg()
 
 void ImagePublisher::preparImgMsg( const uint32_t frameNum )
 {
+    std::cout << "in preparImgMsg frameNum " << frameNum << std::endl;
   image_.frame_number(frameNum);
   image_.frequency(frequency_);
   image_.image(app::matToVecUchar(frame_));
@@ -418,10 +464,23 @@ bool ImagePublisher::publish(bool waitForListener, uint32_t frequency)
    // std::cout << "in publish frequency " << frequency << std::endl;
     if (listener_.firstConnected_ || !waitForListener || listener_.matched_ > 0)
     {
-      //  std::cout << "in publish frequency " << frequency << std::endl;
+     //   std::cout << "is listener connected " << listener_.firstConnected_ << std::endl;
+        //std::cout << "in publish frequency " << frequency << std::endl;
         image_.publisher_send_time(APP_TIME_CURRENT_NS);
         writer_->write(&image_);
         return true;
     }
     return false;
+}
+
+//***********new
+
+//*****************
+ImagePublisher::CustomDomainParticipantListener::CustomDomainParticipantListener()
+    : DomainParticipantListener()
+{
+}
+
+ImagePublisher::CustomDomainParticipantListener::~CustomDomainParticipantListener()
+{
 }

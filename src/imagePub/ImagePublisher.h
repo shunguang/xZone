@@ -19,6 +19,7 @@
 #include "libUtil/CapImg.h"
 #include "libMsg/ImagePubSubTypes.h"
 #include "libCfg/Cfg.h"
+//#include "CustomListeners.h"
 
 #include <fastdds/dds/publisher/DataWriterListener.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
@@ -26,6 +27,7 @@
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/topic/Topic.hpp>
 #include <fastdds/dds/publisher/DataWriter.hpp>
+#include <fastdds/dds/domain/DomainParticipantListener.hpp>
 
 #include <mutex>
 #include <shared_mutex>
@@ -42,8 +44,8 @@ public:
 
     //!Initialize
     bool init(
-            CfgPtr cfg,
-            bool use_env);
+        CfgPtr cfg,
+        bool use_env);
 
     // get frame
     void acqImgMsg();
@@ -55,10 +57,10 @@ public:
     bool publish(
         bool waitForListener,
         uint32_t frequency);
-       // Image oneImage);
-        
+    // Image oneImage);
 
-    //!Run for number samples
+
+ //!Run for number samples
     std::thread run(int i);
 
     //std::thread run();
@@ -118,19 +120,42 @@ private:
             const eprosima::fastdds::dds::InstanceHandle_t& instance) override;
 
         virtual void on_publication_matched(
-                eprosima::fastdds::dds::DataWriter* writer,
-                const eprosima::fastdds::dds::PublicationMatchedStatus& info) override;
+            eprosima::fastdds::dds::DataWriter* writer,
+            const eprosima::fastdds::dds::PublicationMatchedStatus& info) override;
 
         int matched_;
 
         bool firstConnected_;
+
+
     }
     listener_;
 
-    //void runThread();
-   void runThread(int i);
-   
-   eprosima::fastdds::dds::TypeSupport type_;
-};
+    class CustomDomainParticipantListener : public eprosima::fastdds::dds::DomainParticipantListener
+    {
+    public:
 
+        CustomDomainParticipantListener();
+
+        ~CustomDomainParticipantListener() override;
+
+        void on_publication_matched(
+            eprosima::fastdds::dds::DataWriter* writer,
+            const eprosima::fastdds::dds::PublicationMatchedStatus& info) override;
+
+        Image image_;
+
+        int matched_ = 0;
+
+        bool firstConnected_ = false;
+
+        uint32_t samples_ = 0;
+    } participant_listener_;
+
+    //void runThread();
+    void runThread(int i);
+
+    eprosima::fastdds::dds::TypeSupport type_;
+
+};
 #endif /* IMAGEPUBLISHER_H_ */

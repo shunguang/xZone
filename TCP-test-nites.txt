@@ -38,3 +38,50 @@ https://fast-dds.docs.eprosima.com/en/latest/fastdds/api_reference/dds_pim/subsc
 https://blog.sflow.com/2022/02/udp-vs-tcp-for-real-time-streaming.html
 
 https://www.researchgate.net/figure/Typical-variation-in-TCP-latency-upper-line-and-UDP-latency-lower-line-near-zero-in_fig2_228637890
+
+https://fast-dds.docs.eprosima.com/en/latest/fastdds/discovery/discovery_server.html
+
+https://github.com/eProsima/Fast-DDS/tree/master/examples/cpp/dds/CustomListenerExample
+
+
+how to access embed
+Tabby terminal 
+open new tab, connect to debian
+
+/home/debian/xZone/src/makeFiles
+run_all_w_cleanAll.sh
+
+To run
+cd me/debian/xZone/build/bin
+./test.out config.xml
+./ImagePun.out config.xml
+
+windows
+C:\Users\conno\Documents\xZone\build-vs2019-x64\bin\Release\logs
+
+C:\Users\conno\Documents\xZone\src\vs2019\open_xZone_vs2019_cwu.bat
+
+to pull commits from a different repository without a making a pull request
+```
+ git pull https://github.com/ziloka/xZone.git dev:dev
+```
+[Source](https://stackoverflow.com/questions/24815952/git-pull-from-another-repository)
+
+if you want to build an example from the Fast-DDS library 
+- install openssl
+
+run the following commands in the example folder that you want to run
+```
+mkdir build
+cd build
+cmake -DOPENSSL_INCLUDE_DIR="C:\Program Files\OpenSSL-Win64\include" ..
+cmake --build .
+```
+
+To comment code you must perform the following shortcuts in succession 
+ctrl + k, ctrl + c
+
+to uncomment code you must do these in succession
+ctrl + k, ctrl + u
+
+you can look at these shortcuts by going to Edit -> Advanced -> (Comment / Uncomment) Selection
