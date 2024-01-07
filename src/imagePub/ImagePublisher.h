@@ -60,7 +60,7 @@ public:
 
 
  //!Run for number samples
-    std::thread run(int i);
+    std::thread run(int frame_number);
 
     //std::thread run();
 
@@ -131,7 +131,7 @@ private:
     listener_;
 
     //void runThread();
-    void runThread(int i);
+    void runThread(int frame_number);
 
     eprosima::fastdds::dds::TypeSupport type_;
 

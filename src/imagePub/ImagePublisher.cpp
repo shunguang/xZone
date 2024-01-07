@@ -337,41 +337,42 @@ void ImagePublisher::PubListener::on_publication_matched(
     }
 }
 
- void ImagePublisher::runThread(int i)
+ void ImagePublisher::runThread(int frame_number)
 {
      // create a queue of integer data type
-     std::list<Image> image_list;
+     //std::list<Image> image_list;
     const int numSamples = cfgPtr_->getCam().numSamples_;
     uint64_t tBeg = APP_TIME_CURRENT_NS;
     uint64_t tEnd = APP_TIME_CURRENT_NS;
 
-   /* std::cout << "sending " << numSamples << " samples at " << frequency_ << std::endl;
-    for (uint32_t i = 0; i < numSamples; i++) {*/
+    std::cout << "sending " << numSamples << " samples at " << frequency_ << std::endl;
+    for (uint32_t sample_num = 0; sample_num < numSamples; sample_num++) {
    
         acqImgMsg();
-        preparImgMsg(i);
+        preparImgMsg(frame_number);
 
-       // image_list.push_back(image_);
+        //image_list.push_back(image_);
   
-        //tEnd = APP_TIME_CURRENT_NS;
+        tEnd = APP_TIME_CURRENT_NS;
 
-        //uint64_t dealayNanosecond = 1e9 / frequency_;
-        //std::cout << "**dealayNanosecond " << dealayNanosecond  << std::endl;
-        // 
-        //wait utill delay time, interval
+        uint64_t dealayNanosecond = 1e9 / frequency_;
+        // std::cout << "**dealayNanosecond " << dealayNanosecond  << std::endl;
+         
+       // wait utill delay time, interval
     
-        //while (tEnd - tBeg <= dealayNanosecond) {
-        //    tEnd = APP_TIME_CURRENT_NS;
-        //   //uncomment this line to test if a delay is needed
-        //   // std::cout << "**in while loop " << std::endl;
-        //}
-       
-  
-        if (!publish(false, numSamples)) {
-            std::cout << "unable to send sample #" << i << std::endl;
+        while (tEnd - tBeg <= dealayNanosecond) {
+            tEnd = APP_TIME_CURRENT_NS;
+           //uncomment this line to test if a delay is needed
+           // std::cout << "**in while loop " << std::endl;
         }
-        //tBeg = APP_TIME_CURRENT_NS;
-       //}
+       
+        if (!publish(false, numSamples)) {
+            std::cout << "unable to send sample #" << sample_num << std::endl;
+        }
+        //frame_number++;
+
+        tBeg = APP_TIME_CURRENT_NS;
+      }
 }
 
 
