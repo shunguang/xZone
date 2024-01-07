@@ -337,21 +337,19 @@ void ImagePublisher::PubListener::on_publication_matched(
     }
 }
 
- void ImagePublisher::runThread(int frame_number)
+ void ImagePublisher::runThread(int &frame_number)
 {
      // create a queue of integer data type
-     //std::list<Image> image_list;
     const int numSamples = cfgPtr_->getCam().numSamples_;
     uint64_t tBeg = APP_TIME_CURRENT_NS;
     uint64_t tEnd = APP_TIME_CURRENT_NS;
 
     std::cout << "sending " << numSamples << " samples at " << frequency_ << std::endl;
     for (uint32_t sample_num = 0; sample_num < numSamples; sample_num++) {
-   
+        std::cout << frame_number << std::endl;
         acqImgMsg();
         preparImgMsg(frame_number);
 
-        //image_list.push_back(image_);
   
         tEnd = APP_TIME_CURRENT_NS;
 
@@ -369,32 +367,16 @@ void ImagePublisher::PubListener::on_publication_matched(
         if (!publish(false, numSamples)) {
             std::cout << "unable to send sample #" << sample_num << std::endl;
         }
-        //frame_number++;
+        frame_number++;
 
         tBeg = APP_TIME_CURRENT_NS;
       }
 }
 
-
-/*
-void ImagePublisher::runThread(int i)
-{
-    acqImgMsg();
-    preparImgMsg(i);
-
-    // todo: make this thread
-    if (!publish(false, cfgCam_.numSamples_)) {
-        std::cout << "unable to send sample #" << i << std::endl;
-    }
-}
-//std::cout << " published. " << i << std::endl;
-
-*/
-
-std::thread ImagePublisher::run(int i)
+std::thread ImagePublisher::run(int &frame_number)
 {
     stop_ = false;
-    std::thread thread(&ImagePublisher::runThread, this, i);
+    std::thread thread(&ImagePublisher::runThread, this, std::ref(frame_number));
     return thread;
 }
 

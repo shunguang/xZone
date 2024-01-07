@@ -73,10 +73,10 @@ int main(int argc, char* argv[])
 		ImagePublisher mypub(mutex, cfg, hz);
 		
 		if (mypub.init(cfg, use_environment_qos)) {
-				std::thread publisher = mypub.run(frameNum);
+				std::thread publisher = mypub.run(std::ref(frameNum));
 				publisher.join();
 		}
-		
+
 		std::cout << "in MainPub finished frequency " << hz << std::endl;
 	}
 

@@ -59,10 +59,8 @@ public:
     // Image oneImage);
 
 
- //!Run for number samples
-    std::thread run(int frame_number);
-
-    //std::thread run();
+    //!Run for number samples
+    std::thread run(int &frame_number);
 
 private:
 
@@ -130,8 +128,7 @@ private:
     }
     listener_;
 
-    //void runThread();
-    void runThread(int frame_number);
+    void runThread(int &frame_number);
 
     eprosima::fastdds::dds::TypeSupport type_;
 
