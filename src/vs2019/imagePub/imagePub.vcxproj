@@ -22,7 +22,6 @@
     <ClCompile Include="..\..\imagePub\UpdateCamSubscriber.cpp" />
     <ClCompile Include="..\..\imagePub\ImagePublisher.cpp" />
     <ClCompile Include="..\..\imagePub\mainPub.cpp" />
-    <ClCompile Include="CustomListeners.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\libImageSub\libImageSub.vcxproj">
@@ -35,7 +34,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\imagePub\UpdateCamSubscriber.h" />
     <ClInclude Include="..\..\imagePub\ImagePublisher.h" />
-    <ClInclude Include="CustomListeners.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

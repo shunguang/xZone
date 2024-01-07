@@ -19,7 +19,6 @@
 #include "libUtil/CapImg.h"
 #include "libMsg/ImagePubSubTypes.h"
 #include "libCfg/Cfg.h"
-//#include "CustomListeners.h"
 
 #include <fastdds/dds/publisher/DataWriterListener.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
@@ -130,27 +129,6 @@ private:
 
     }
     listener_;
-
-    class CustomDomainParticipantListener : public eprosima::fastdds::dds::DomainParticipantListener
-    {
-    public:
-
-        CustomDomainParticipantListener();
-
-        ~CustomDomainParticipantListener() override;
-
-        void on_publication_matched(
-            eprosima::fastdds::dds::DataWriter* writer,
-            const eprosima::fastdds::dds::PublicationMatchedStatus& info) override;
-
-        Image image_;
-
-        int matched_ = 0;
-
-        bool firstConnected_ = false;
-
-        uint32_t samples_ = 0;
-    } participant_listener_;
 
     //void runThread();
     void runThread(int i);

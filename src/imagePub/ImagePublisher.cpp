@@ -73,17 +73,10 @@ ImagePublisher::ImagePublisher(std::shared_ptr<std::shared_mutex> mutexPtr, CfgP
 
 bool ImagePublisher::init(CfgPtr cfg, bool use_env)
 {
-
     image_.frame_number(0);
-  //  std::cout << "in ImagePublisher::init" << std::endl;
     
     DomainParticipantQos participant_qos = PARTICIPANT_QOS_DEFAULT;
- 
-
-    participant_qos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
-    participant_qos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = eprosima::fastrtps::Duration_t(5, 0);
     participant_qos.name("ImagePublisher");
-    participant_qos.transport().use_builtin_transports = false;
 
     PublishModeQosPolicy publish_mode;
      
@@ -107,22 +100,30 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     switch (cfg->getTransport()) {
        
     case 1: {
-       // std::cout << "Using TCP as transport" << std::endl;
-        std::shared_ptr<TCPv4TransportDescriptor> descriptor = std::make_shared<TCPv4TransportDescriptor>();
-       // descriptor->sendBufferSize = 0;
-       // descriptor->receiveBufferSize = 0;
+       std::cout << "Using TCP as transport" << std::endl;
+       std::shared_ptr<TCPv4TransportDescriptor> descriptor = std::make_shared<TCPv4TransportDescriptor>();
+       //descriptor->interfaceWhiteList.push_back("127.0.0.1");
+       descriptor->sendBufferSize = 0;
+       descriptor->receiveBufferSize = 0;
+
+        participant_qos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
+        // 0 seconds and 2e7 (20,000,000) nanoseconds or 20 miliseconds
+        // this basically is how long should i wait until i should match with the publisher
+        participant_qos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = eprosima::fastrtps::Duration_t(0, 2e7);
+
 
         descriptor->add_listener_port(5100);
-        descriptor->set_WAN_address("127.0.0.1");
-        descriptor->enable_tcp_nodelay = true;
+        // descriptor->set_WAN_address("127.0.0.1");
+        // descriptor->enable_tcp_nodelay = true;
 
         // Link the Transport Layer to the Participant.
         participant_qos.transport().user_transports.push_back(descriptor);
-  
+        participant_qos.transport().use_builtin_transports = false;
+
         break;
     }
     case 2: {
-        //std::cout << "Using UDP as transport" << std::endl;
+        std::cout << "Using UDP as transport" << std::endl;
         std::shared_ptr<UDPv4TransportDescriptor> descriptor = std::make_shared<UDPv4TransportDescriptor>();
        // descriptor->sendBufferSize = 0;
        // descriptor->receiveBufferSize = 0;
@@ -136,7 +137,7 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
         break;
     }
     case 3: {
-        //std::cout << "Using Shared memory as transport" << std::endl;
+        std::cout << "Using Shared memory as transport" << std::endl;
 
         // Create a descriptor for the new transport.
         std::shared_ptr<SharedMemTransportDescriptor> descriptor = std::make_shared<SharedMemTransportDescriptor>();
@@ -252,7 +253,7 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     {
         return false;
     }
-    std::cout << "create_datawriter " << &image_.frame_number() << std::endl;
+    // std::cout << "create_datawriter " << &image_.frame_number() << std::endl;
     return true;
 }
 
@@ -311,7 +312,7 @@ void ImagePublisher::PubListener::on_unacknowledged_sample_removed(
 {
     static_cast<void>(writer);
     static_cast<void>(instance);
-    std::cout << "Sample removed unacknowledged" << std::endl;
+    // std::cout << "Sample removed unacknowledged" << std::endl;
 }
 
 void ImagePublisher::PubListener::on_publication_matched(
@@ -333,28 +334,6 @@ void ImagePublisher::PubListener::on_publication_matched(
     {
         std::cout << info.current_count_change
                   << " is not a valid value for PublicationMatchedStatus current count change" << std::endl;
-    }
-}
-
-void ImagePublisher::CustomDomainParticipantListener::on_publication_matched(
-    DataWriter*,
-    const PublicationMatchedStatus& info)
-{
-    if (info.current_count_change == 1)
-    {
-        matched_ = info.total_count;
-        firstConnected_ = true;
-        std::cout << "(CustomDomainParticipantListener) Publisher matched." << std::endl;
-    }
-    else if (info.current_count_change == -1)
-    {
-        matched_ = info.total_count;
-        std::cout << "(CustomDomainParticipantListener) Publisher unmatched." << std::endl;
-    }
-    else
-    {
-        std::cout << info.current_count_change
-            << " is not a valid value for PublicationMatchedStatus current count change" << std::endl;
     }
 }
 
@@ -449,7 +428,6 @@ void ImagePublisher::acqImgMsg()
 
 void ImagePublisher::preparImgMsg( const uint32_t frameNum )
 {
-    std::cout << "in preparImgMsg frameNum " << frameNum << std::endl;
   image_.frame_number(frameNum);
   image_.frequency(frequency_);
   image_.image(app::matToVecUchar(frame_));
@@ -461,7 +439,6 @@ void ImagePublisher::preparImgMsg( const uint32_t frameNum )
 bool ImagePublisher::publish(bool waitForListener, uint32_t frequency)
 //bool ImagePublisher::publish(bool waitForListener, uint32_t frequency, Image oneImage)
 {
-   // std::cout << "in publish frequency " << frequency << std::endl;
     if (listener_.firstConnected_ || !waitForListener || listener_.matched_ > 0)
     {
      //   std::cout << "is listener connected " << listener_.firstConnected_ << std::endl;
@@ -471,16 +448,4 @@ bool ImagePublisher::publish(bool waitForListener, uint32_t frequency)
         return true;
     }
     return false;
-}
-
-//***********new
-
-//*****************
-ImagePublisher::CustomDomainParticipantListener::CustomDomainParticipantListener()
-    : DomainParticipantListener()
-{
-}
-
-ImagePublisher::CustomDomainParticipantListener::~CustomDomainParticipantListener()
-{
 }

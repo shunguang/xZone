@@ -61,13 +61,6 @@ private:
 
     eprosima::fastdds::dds::StatusMask p_mask_;
 
-    class SubParticipantListener : public DomainParticipantListener {
-  
-        void on_data_on_readers(eprosima::fastdds::dds::Subscriber* subscriber) override;
-
-        
-    } subParticipantListener_;
-
     class SubListener : public eprosima::fastdds::dds::DataReaderListener
     {
     public:
@@ -135,33 +128,6 @@ private:
 
         app::AppMeanStd<uint32_t> latencyStat_;
     } listener_;
-
-
-    class CustomDomainParticipantListener : public eprosima::fastdds::dds::DomainParticipantListener
-    {
-    public:
-
-        CustomDomainParticipantListener();
-
-        ~CustomDomainParticipantListener() override;
-
-
-        void on_data_available(
-            eprosima::fastdds::dds::DataReader* reader) override;
-
-
-        void on_subscription_matched(
-            eprosima::fastdds::dds::DataReader* reader,
-            const eprosima::fastdds::dds::SubscriptionMatchedStatus& info) override;
-
-        Image image_;
-
-        int matched_ = 0;
-
-        bool firstConnected_ = false;
-
-        uint32_t samples_ = 0;
-    } participant_listener_;
 
     void runThread();
     void runThread(int i);

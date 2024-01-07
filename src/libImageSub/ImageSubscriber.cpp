@@ -74,11 +74,12 @@ bool ImageSubscriber::init(
 
         eprosima::fastrtps::rtps::Locator_t initial_peer_locator;
         initial_peer_locator.kind = LOCATOR_KIND_TCPv4;
-        initial_peer_locator.port = 5100;
-
         IPLocator::setIPv4(initial_peer_locator, "127.0.0.1");
+        initial_peer_locator.port = 5100;
+        pqos.wire_protocol().builtin.initialPeersList.push_back(initial_peer_locator);
+
         pqos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
-        pqos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = Duration_t(5, 0);
+        pqos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = Duration_t(0, 2e7);
         //IPLocator::setPhysicalPort(initial_peer_locator, 5100);
         //IPLocator::setLogicalPort(initial_peer_locator, 5100);
 
@@ -119,11 +120,8 @@ bool ImageSubscriber::init(
     }
     }
    
-    p_mask_ = StatusMask::all();
-    p_mask_.set(9, false);
-   //participant_ = factory->create_participant(0, pqos, &participant_listener_, p_mask_);
-    participant_ = factory->create_participant(0, pqos, &participant_listener_);
-    std::cout << "Domain Id: " << participant_->get_domain_id() << std::endl;
+    participant_ = factory->create_participant(0, pqos);
+    // std::cout << "Domain Id: " << participant_->get_domain_id() << std::endl;
 
    // participant_ = factory->create_participant(0, pqos);
 
@@ -185,12 +183,16 @@ bool ImageSubscriber::init(
         return false;
     }
 
-   
-
     //CREATE THE DATAREADER
 
-    DataReaderQos rqos = DATAREADER_QOS_DEFAULT;
-    rqos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+    DataReaderQos rqos;
+    rqos.history().kind = eprosima::fastdds::dds::KEEP_LAST_HISTORY_QOS;
+    rqos.history().depth = 30;
+    rqos.resource_limits().max_samples = 50;
+    rqos.resource_limits().allocated_samples = 20;
+    rqos.reliability().kind = eprosima::fastdds::dds::RELIABLE_RELIABILITY_QOS;
+    rqos.durability().kind = eprosima::fastdds::dds::TRANSIENT_LOCAL_DURABILITY_QOS;
+    reader_ = subscriber_->create_datareader(topic_, rqos, &listener_);
 
  //   DataReaderQos rqos;
   //     rqos.history().kind = eprosima::fastdds::dds::KEEP_LAST_HISTORY_QOS;
@@ -228,18 +230,6 @@ ImageSubscriber::~ImageSubscriber()
     DomainParticipantFactory::get_instance()->delete_participant(participant_);
 }
 
-
-void ImageSubscriber::SubParticipantListener::on_data_on_readers(
-    Subscriber* subscriber)
-{
-    std::cout << "ParticipantListener: on_data_on_readers()" << std::endl;
-    // notify_datareaders() only calls on_data_available for
-    // DataReaders with unread samples
-  
-        subscriber->notify_datareaders();
-   
-}
-
 void ImageSubscriber::SubListener::on_subscription_matched(
         DataReader*,
         const SubscriptionMatchedStatus& info)
@@ -271,13 +261,11 @@ void ImageSubscriber::SubListener::on_data_available(  DataReader* reader)
 {
     SampleInfo info;
 
-    std::cout << " in on_data_available 0 " << info.instance_state << std::endl;
     if (reader->take_next_sample(&image_, &info) == ReturnCode_t::RETCODE_OK)
     {
         if (info.instance_state == ALIVE_INSTANCE_STATE)
         {
             samples_++;
-            //std::cout << " in on_data_available" <<  std::endl;
             // Print your structure data here.
 
             //while (1) {
@@ -332,54 +320,4 @@ void ImageSubscriber::run(uint32_t number)
 void createImageSubscriber(CfgPtr cfg, bool use_environment_qos) {
     ImageSubscriber imageSubscriber;
     if (imageSubscriber.init(cfg, use_environment_qos)) imageSubscriber.run();
-}
-
-
-//*****************
-ImageSubscriber::CustomDomainParticipantListener::CustomDomainParticipantListener()
-    : DomainParticipantListener()
-{
-}
-
-ImageSubscriber::CustomDomainParticipantListener::~CustomDomainParticipantListener()
-{
-}
-
-
-void ImageSubscriber::CustomDomainParticipantListener::on_subscription_matched(
-    DataReader*,
-    const SubscriptionMatchedStatus& info)
-{
-    std::cout << "(CustomDomainParticipantListener) in CustomDomainParticipantListener::on_subscription_matched." << std::endl;
-    if (info.current_count_change == 1)
-    {
-        matched_ = info.total_count;
-        std::cout << "(CustomDomainParticipantListener) Subscriber matched." << std::endl;
-    }
-    else if (info.current_count_change == -1)
-    {
-        matched_ = info.total_count;
-        std::cout << "(CustomDomainParticipantListener) Subscriber unmatched." << std::endl;
-    }
-    else
-    {
-        std::cout << info.current_count_change
-            << " is not a valid value for SubscriptionMatchedStatus current count change" << std::endl;
-    }
-}
-
-void ImageSubscriber::CustomDomainParticipantListener::on_data_available(
-    DataReader* reader)
-{
-    SampleInfo info;
-    if (reader->take_next_sample(&image_, &info) == ReturnCode_t::RETCODE_OK)
-    {
-        if (info.instance_state == ALIVE_INSTANCE_STATE)
-        {
-            samples_++;
-            // Print your structure data here.
-            std::cout << "(CustomDomainParticipantListener) " << image_.height() << " " << image_.frame_number() <<
-                " RECEIVED" << std::endl;
-        }
-    }
 }

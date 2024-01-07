@@ -20,18 +20,12 @@
     <ClCompile Include="..\..\imagePub\UpdateCamSubscriber.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CustomListeners.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\imagePub\ImagePublisher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\imagePub\UpdateCamSubscriber.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomListeners.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

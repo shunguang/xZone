@@ -54,55 +54,45 @@ int main(int argc, char* argv[])
 	registerImageTypes();
 	// pass hz frequency param
 	// std::vector<std::thread> threads;
-	
-	ImagePublisher mypub(mutex, cfg, 20);
-	if (mypub.init(cfg, use_environment_qos)) {
-		while (true) {
-			std::thread publisher = mypub.run(1);
-			publisher.join();
-		}
-		
-	}
-	
 	 
-	//const int numSamples = cfg->getCam().numSamples_;
-	//int frameNum = 1;
-	//for (double hz = cfg->getCam().frequency_.start; hz <= cfg->getCam().frequency_.end; hz += cfg->getCam().frequency_.step) {
-	//	std::cout << "On frequency #" << hz << std::endl << std::endl;
-	//	std::cout << "sending " << numSamples << " samples at " << hz << std::endl;
+	const int numSamples = cfg->getCam().numSamples_;
+	int frameNum = 1;
+	for (double hz = cfg->getCam().frequency_.start; hz <= cfg->getCam().frequency_.end; hz += cfg->getCam().frequency_.step) {
+		std::cout << "On frequency #" << hz << std::endl << std::endl;
+		std::cout << "sending " << numSamples << " samples at " << hz << std::endl;
 
-	//	long tBeg = APP_TIME_CURRENT_NS;
-	//	long tEnd = APP_TIME_CURRENT_NS;
+		long tBeg = APP_TIME_CURRENT_NS;
+		long tEnd = APP_TIME_CURRENT_NS;
 
-	//	for (uint32_t i = 0; i <= numSamples; i++) {
+		for (uint32_t i = 0; i <= numSamples; i++) {
 
-	//		tBeg = APP_TIME_CURRENT_NS;
-	//		long dealayNanosecond = 1e9 / hz;
+			tBeg = APP_TIME_CURRENT_NS;
+			long dealayNanosecond = 1e9 / hz;
 
 
-	//		//std::cout << "**dealayNanosecond " << dealayNanosecond  << std::endl;
-	//		// 
-	//		//wait utill delay time, interval
+			//std::cout << "**dealayNanosecond " << dealayNanosecond  << std::endl;
+			// 
+			//wait utill delay time, interval
 
-	//		while (tEnd - tBeg <= dealayNanosecond) {
-	//			tEnd = APP_TIME_CURRENT_NS;
-	//			//uncomment this line to test if a delay is needed
-	//			// std::cout << "**in while loop " << std::endl;
-	//		}
-	//	
-	//		ImagePublisher mypub(mutex, cfg, hz);
-	//	
-	//		if (mypub.init(cfg, use_environment_qos)) {
-	//	
-	//				std::thread publisher = mypub.run(frameNum);
-	//				publisher.join();
-	//		}
-	//		frameNum += 1;
-	//	}
-	//	tEnd = APP_TIME_CURRENT_NS;
-	//	//end for loop
-	//	std::cout << "in MainPub finished frequency " << hz << std::endl;
-	//}
+			while (tEnd - tBeg <= dealayNanosecond) {
+				tEnd = APP_TIME_CURRENT_NS;
+				//uncomment this line to test if a delay is needed
+				// std::cout << "**in while loop " << std::endl;
+			}
+		
+			ImagePublisher mypub(mutex, cfg, hz);
+		
+			if (mypub.init(cfg, use_environment_qos)) {
+		
+					std::thread publisher = mypub.run(frameNum);
+					publisher.join();
+			}
+			frameNum += 1;
+		}
+		tEnd = APP_TIME_CURRENT_NS;
+		//end for loop
+		std::cout << "in MainPub finished frequency " << hz << std::endl;
+	}
 
 	app::endLogThread();
 	return 0;
