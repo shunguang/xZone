@@ -350,7 +350,6 @@ void ImagePublisher::PubListener::on_publication_matched(
         acqImgMsg();
         preparImgMsg(frame_number);
 
-  
         tEnd = APP_TIME_CURRENT_NS;
 
         uint64_t dealayNanosecond = 1e9 / frequency_;
