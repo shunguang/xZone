@@ -292,8 +292,6 @@ void ImagePublisher::PubListener::on_publication_matched(
     
         while (tEnd - tBeg <= dealayNanosecond) {
             tEnd = APP_TIME_CURRENT_NS;
-           //uncomment this line to test if a delay is needed
-           // std::cout << "**in while loop " << std::endl;
         }
        
         if (!publish(false, numSamples)) {

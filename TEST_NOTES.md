@@ -102,3 +102,14 @@ cmake --build .
 rm -r -fo dir_name
 ```
 
+if the image size is larger than Maximum transmission unit, it will take longer to send
+
+Determining system maxmium mtu on windows (command prompt)
+```
+netsh interface ipv4 show subinterface
+```
+
+Determining system maxmium mtu on linux
+```
+ifconfig | grep -i MTU
+```
