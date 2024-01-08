@@ -54,15 +54,6 @@ int main(int argc, char* argv[])
 	registerImageTypes();
 	// pass hz frequency param
 	// std::vector<std::thread> threads;
-	
-	//ImagePublisher mypub(mutex, cfg, 20);
-	//if (mypub.init(cfg, use_environment_qos)) {
-	//	while (true) {
-	//		std::thread publisher = mypub.run(1);
-	//		publisher.join();
-	//	}
-	//}
-	//
 	 
 	const int numSamples = cfg->getCam().numSamples_;
 	int frameNum = 1;
@@ -73,8 +64,7 @@ int main(int argc, char* argv[])
 		ImagePublisher mypub(mutex, cfg, hz);
 		
 		if (mypub.init(cfg, use_environment_qos)) {
-				std::thread publisher = mypub.run(std::ref(frameNum));
-				publisher.join();
+			mypub.runFrequency(std::ref(frameNum));
 		}
 
 		std::cout << "in MainPub finished frequency " << hz << std::endl;

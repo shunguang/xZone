@@ -58,9 +58,7 @@ public:
         uint32_t frequency);
     // Image oneImage);
 
-
-    //!Run for number samples
-    std::thread run(int &frame_number);
+    void runFrequency(int& frame_number);
 
 private:
 
@@ -127,8 +125,6 @@ private:
 
     }
     listener_;
-
-    void runThread(int &frame_number);
 
     eprosima::fastdds::dds::TypeSupport type_;
 

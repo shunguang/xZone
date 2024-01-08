@@ -271,7 +271,7 @@ void ImagePublisher::PubListener::on_publication_matched(
     }
 }
 
- void ImagePublisher::runThread(int &frame_number)
+ void ImagePublisher::runFrequency(int &frame_number)
 {
      // create a queue of integer data type
     const int numSamples = cfgPtr_->getCam().numSamples_;
@@ -286,9 +286,6 @@ void ImagePublisher::PubListener::on_publication_matched(
         tEnd = APP_TIME_CURRENT_NS;
 
         uint64_t dealayNanosecond = 1e9 / frequency_;
-        // std::cout << "**dealayNanosecond " << dealayNanosecond  << std::endl;
-         
-       // wait utill delay time, interval
     
         while (tEnd - tBeg <= dealayNanosecond) {
             tEnd = APP_TIME_CURRENT_NS;
@@ -302,36 +299,6 @@ void ImagePublisher::PubListener::on_publication_matched(
         tBeg = APP_TIME_CURRENT_NS;
       }
 }
-
-std::thread ImagePublisher::run(int &frame_number)
-{
-    stop_ = false;
-    std::thread thread(&ImagePublisher::runThread, this, std::ref(frame_number));
-    return thread;
-}
-
-/*
-void ImagePublisher::runThread(int i)
-{
-	acqImgMsg();
-	preparImgMsg(i);
-
-           // todo: make this thread
-        if (!publish(false, cfgCam_.numSamples_)) {
-            std::cout << "unable to send sample #" << i << std::endl;
-        }
-    }
-    //std::cout << " published. " << i << std::endl;
-}
-
-
-std::thread ImagePublisher::run(int i)
-{
-    stop_ = false;
-    std::thread thread(&ImagePublisher::runThread, this, i);
-    return thread;
-}
-*/
 
 void ImagePublisher::acqImgMsg()
 {
