@@ -26,8 +26,9 @@
 #include <thread>
 #include <chrono>
 #include <list>
-
 #include <iostream>
+
+#include "libUtil/AppDefs.h"
 
 using namespace eprosima::fastdds::dds;
 using namespace eprosima::fastdds::rtps;
@@ -93,33 +94,33 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     stop_ = false;
   
     switch (cfg->getTransport()) {
-        case 1: {
-           std::cout << "Using TCP as transport" << std::endl;
-           std::shared_ptr<TCPv4TransportDescriptor> descriptor = std::make_shared<TCPv4TransportDescriptor>();
-           descriptor->sendBufferSize = 0;
-           descriptor->receiveBufferSize = 0;
+        case Transport::TCP: {
+                std::cout << "Using TCP as transport" << std::endl;
+                std::shared_ptr<TCPv4TransportDescriptor> descriptor = std::make_shared<TCPv4TransportDescriptor>();
+                descriptor->sendBufferSize = 0;
+                descriptor->receiveBufferSize = 0;
 
-            participant_qos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
-            // 0 seconds and 2e7 (20,000,000) nanoseconds or 20 miliseconds
-            // this basically is how long should i wait until i should match with the publisher
-            participant_qos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = eprosima::fastrtps::Duration_t(0, 2e7);
-            descriptor->add_listener_port(5100);
+                participant_qos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
+                // 0 seconds and 2e7 (20,000,000) nanoseconds or 20 miliseconds
+                // this basically is how long should i wait until i should match with the publisher
+                participant_qos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = eprosima::fastrtps::Duration_t(0, 2e7);
+                descriptor->add_listener_port(5100);
 
-            participant_qos.transport().user_transports.push_back(descriptor);
-            participant_qos.transport().use_builtin_transports = false;
+                participant_qos.transport().user_transports.push_back(descriptor);
+                participant_qos.transport().use_builtin_transports = false;
 
-            break;
+                break;
         }
-        case 2: {
-            std::cout << "Using UDP as transport" << std::endl;
-            std::shared_ptr<UDPv4TransportDescriptor> descriptor = std::make_shared<UDPv4TransportDescriptor>();
+        case Transport::UDP: {
+                std::cout << "Using UDP as transport" << std::endl;
+                std::shared_ptr<UDPv4TransportDescriptor> descriptor = std::make_shared<UDPv4TransportDescriptor>();
  
-            // Link the Transport Layer to the Participant.
-            participant_qos.transport().user_transports.push_back(descriptor);
-            participant_qos.transport().use_builtin_transports = false;
-            break;
+                // Link the Transport Layer to the Participant.
+                participant_qos.transport().user_transports.push_back(descriptor);
+                participant_qos.transport().use_builtin_transports = false;
+                break;
         }
-        case 3: {
+        case Transport::SharedMemory: {
             std::cout << "Using Shared memory as transport" << std::endl;
 
             // Create a descriptor for the new transport.

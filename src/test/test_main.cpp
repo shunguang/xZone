@@ -31,6 +31,13 @@ int main(int argc, char* argv[])
 	CfgPtr cfg(new Cfg());
 	cfg->readFromFile(argv[1]);
 
+	if (const char* transport = std::getenv("XZONE_TRANSPORT")) {
+		std::cout << "The transport in the config.xml isn't being used" << std::endl;
+		std::cout << "The program will use whatever " << transport << " corresponds to" << std::endl;
+		cfg->setTransport(*transport - '0');
+		std::cout << std::endl << std::endl;
+	}
+
 	bool use_environment_qos = false;
 	const string logFilename("./logTestProcess.txt");
 	const bool showInConsole = true;

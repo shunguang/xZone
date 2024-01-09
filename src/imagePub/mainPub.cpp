@@ -54,7 +54,14 @@ int main(int argc, char* argv[])
 	registerImageTypes();
 	// pass hz frequency param
 	// std::vector<std::thread> threads;
-	 
+	
+	if (const char* transport = std::getenv("XZONE_TRANSPORT")) {
+		std::cout << "The transport in the config.xml isn't being used" << std::endl;
+		std::cout << "The program will use whatever " << transport << " corresponds to" << std::endl;
+		cfg->setTransport(*transport - '0');
+		std::cout << std::endl << std::endl;
+	}
+
 	const int numSamples = cfg->getCam().numSamples_;
 	int frameNum = 1;
 	for (double hz = cfg->getCam().frequency_.start; hz <= cfg->getCam().frequency_.end; hz += cfg->getCam().frequency_.step) {

@@ -26,6 +26,7 @@
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
 #include <fastrtps/utils/IPLocator.h>
 
+#include "libUtil/AppDefs.h"
 
 using namespace eprosima::fastdds::rtps;
 using namespace eprosima::fastdds::dds;
@@ -33,17 +34,18 @@ using namespace app;
 
 using IPLocator = eprosima::fastrtps::rtps::IPLocator;
 
-ImageSubscriber::ImageSubscriber()
+ImageSubscriber::ImageSubscriber(CfgPtr cfg)
     : participant_(nullptr)
     , subscriber_(nullptr)
     , topic_(nullptr)
     , reader_(nullptr)
+    , listener_(SubListener(cfg))
     , type_(new ImagePubSubType())
 {
+    cfg_ = cfg;
 }
 
 bool ImageSubscriber::init(
-        CfgPtr  cfg,
         bool use_env)
 {
     DomainParticipantQos pqos = PARTICIPANT_QOS_DEFAULT;
@@ -59,9 +61,9 @@ bool ImageSubscriber::init(
     // Set initial peers.
     // std::cout << "Using TCP as transport " << cfg->getTransport()  << std::endl;
 
-    switch (cfg->getTransport()) {
+    switch (cfg_->getTransport()) {
 
-    case 1: {
+    case Transport::TCP: {
         std::cout << "Using TCP as transport" << std::endl;
 
         // client
@@ -80,17 +82,11 @@ bool ImageSubscriber::init(
 
         pqos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
         pqos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = Duration_t(0, 2e7);
-        //IPLocator::setPhysicalPort(initial_peer_locator, 5100);
-        //IPLocator::setLogicalPort(initial_peer_locator, 5100);
-
-        //pqos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
-        //pqos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = Duration_t(5, 0);
 
         pqos.transport().use_builtin_transports = false;
-      /*  pqos.wire_protocol().builtin.initialPeersList.push_back(initial_peer_locator);*/
         break;
     }
-    case 2: {
+    case Transport::UDP: {
         std::cout << "Using UDP as transport" << std::endl;
 
         auto udp_transport = std::make_shared<UDPv4TransportDescriptor>();
@@ -103,7 +99,7 @@ bool ImageSubscriber::init(
         pqos.transport().use_builtin_transports = false;
         break;
     }
-    case 3: {
+    case Transport::SharedMemory: {
         std::cout << "Using Shared Memory as transport" << std::endl;
 
         // Create a descriptor for the new transport.
@@ -318,6 +314,6 @@ void ImageSubscriber::run(uint32_t number)
 }
 
 void createImageSubscriber(CfgPtr cfg, bool use_environment_qos) {
-    ImageSubscriber imageSubscriber;
-    if (imageSubscriber.init(cfg, use_environment_qos)) imageSubscriber.run();
+    ImageSubscriber imageSubscriber(cfg);
+    if (imageSubscriber.init(use_environment_qos)) imageSubscriber.run();
 }

@@ -45,6 +45,10 @@ namespace app {
 			return m_transport;
 		}
 
+		void setTransport(int transport) {
+			m_transport = transport;
+		}
+
 		CfgLog getLog() {
 			CfgLog ret; 
 			{

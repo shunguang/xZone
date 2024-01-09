@@ -176,6 +176,28 @@ typedef uint64_t              app_time_ns_t;
 
 #define MAX_NUM_PROCESS       10
 
+// https://stackoverflow.com/a/23402871
+#define AWESOME_MAKE_ENUM(name, ...) enum class name { __VA_ARGS__, __COUNT}; \
+inline std::ostream& operator<<(std::ostream& os, name value) { \
+std::string enumName = #name; \
+std::string str = #__VA_ARGS__; \
+int len = str.length(); \
+std::vector<std::string> strings; \
+std::ostringstream temp; \
+for(int i = 0; i < len; i ++) { \
+if(isspace(str[i])) continue; \
+        else if(str[i] == ',') { \
+        strings.push_back(temp.str()); \
+        temp.str(std::string());\
+        } \
+        else temp<< str[i]; \
+} \
+strings.push_back(temp.str()); \
+os << enumName << "::" << strings[static_cast<int>(value)]; \
+return os;} 
+
+static const std::string TransportNames[] = { "UDP", "TCP", "SharedMemory" };
+
 enum Transport {
 	UDP = 1,
 	TCP = 2,

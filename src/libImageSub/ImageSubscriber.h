@@ -31,13 +31,12 @@ using namespace eprosima::fastdds::dds;
 class ImageSubscriber {
 public:
   
-    ImageSubscriber();
+    ImageSubscriber(app::CfgPtr cfg);
 
     virtual ~ImageSubscriber();
 
     //!Initialize the subscriber
     bool init(
-            app::CfgPtr  cfg,
             bool use_env);
 
     //!RUN the subscriber
@@ -65,23 +64,24 @@ private:
     {
     public:
 
-        SubListener()
+        SubListener(app::CfgPtr cfg)
             : matched_(0)
             , samples_(0)
             , file_(std::ofstream())
+            , cfg_(cfg)
         {
             boost::filesystem::path dir("logs");
 
-            if (!(boost::filesystem::exists(dir))) {
+            if (!boost::filesystem::exists(dir)) {
                 std::cout << "logs folder doesn't Exist" << std::endl;
 
-            if (boost::filesystem::create_directory(dir))
+                if (boost::filesystem::create_directory(dir)) {
                     std::cout << "....Successfully Created logs folder !" << std::endl;
+                }
             }
 
             // https://stackoverflow.com/questions/38034033/c-localtime-this-function-or-variable-may-be-unsafe
             time_t t = std::time(nullptr);
-            //tm tm = *std::localtime(&t);
 
             std::tm bt{};
             #if defined(__unix__)
@@ -94,10 +94,8 @@ private:
                 bt = *std::localtime(&t);
             #endif
 
-          //  auto dateTime = *std::put_time(&tm, "%d-%m-%Y %H-%M-%S")
             std::stringstream currentDateTime;
-            currentDateTime << std::put_time(&bt, "%Y%m%d%H%M%S");
-                //"%d-%m-%Y %H-%M-%S");
+            currentDateTime << TransportNames[cfg->getTransport()] << "_" << std::to_string(cfg->getCam().imgSz_.h) << "_" << std::to_string(cfg->getCam().imgSz_.w) << std::put_time(&bt, "%Y%m%d%H%M%S");
             std::string outPutFile = "logs/image_pubsub_data"+ currentDateTime.str() +".csv";
             file_.open(outPutFile, std::ofstream::out | std::ofstream::trunc);
             std::cout << "Opened " + outPutFile +"..appending to file" << std::endl;
@@ -115,12 +113,12 @@ private:
             eprosima::fastdds::dds::DataReader* reader,
             const eprosima::fastdds::dds::SubscriptionMatchedStatus& info) override;
 
+        app::CfgPtr  cfg_;
+
         Image image_;
 
         int matched_;
       
-        
-
         uint32_t samples_;
 
         std::stringstream output_data_stringstream_;
@@ -129,13 +127,10 @@ private:
         app::AppMeanStd<uint32_t> latencyStat_;
     } listener_;
 
-    void runThread();
-    void runThread(int i);
+    app::CfgPtr  cfg_;
 
    // eprosima::fastdds::dds::TypeSupport type_;
 };
-
-
 
 void createImageSubscriber(app::CfgPtr cfg, bool use_environment_qos);
 
