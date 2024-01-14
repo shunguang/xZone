@@ -95,7 +95,7 @@ private:
             #endif
 
             std::stringstream currentDateTime;
-            currentDateTime << TransportNames[cfg->getTransport()] << "_" << std::to_string(cfg->getCam().imgSz_.h) << "_" << std::to_string(cfg->getCam().imgSz_.w) << "_" << std::put_time(&bt, "%Y%m%d%H%M%S");
+            currentDateTime << TransportNames[cfg->getTransport()-1] << "_" << std::to_string(cfg->getCam().imgSz_.h) << "_" << std::to_string(cfg->getCam().imgSz_.w) << "_" << std::put_time(&bt, "%Y%m%d%H%M%S");
             std::string outPutFile = "logs/image_pubsub_data"+ currentDateTime.str() +".csv";
             file_.open(outPutFile, std::ofstream::out | std::ofstream::trunc);
             std::cout << "Opened " + outPutFile +"..appending to file" << std::endl;
