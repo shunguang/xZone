@@ -279,7 +279,7 @@ void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
     
     int frame_number = 1;
     cv::Size size = cv::Size(1, 1);
-    while (size.area() * 3 >= max_packet_size) {
+    while (size.area() * 3 <= max_packet_size) {
         frame_ = cv::Mat(size, CV_8UC3);
         
         for (uint32_t sample_num = 0; sample_num < numSamples; sample_num++) {
@@ -351,12 +351,9 @@ void ImagePublisher::preparImgMsg( const uint32_t frameNum )
 }
 
 bool ImagePublisher::publish(bool waitForListener, uint32_t frequency)
-//bool ImagePublisher::publish(bool waitForListener, uint32_t frequency, Image oneImage)
 {
     if (listener_.firstConnected_ || !waitForListener || listener_.matched_ > 0)
     {
-     //   std::cout << "is listener connected " << listener_.firstConnected_ << std::endl;
-        //std::cout << "in publish frequency " << frequency << std::endl;
         image_.publisher_send_time(APP_TIME_CURRENT_NS);
         writer_->write(&image_);
         return true;
