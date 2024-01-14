@@ -176,7 +176,7 @@ typedef uint64_t              app_time_ns_t;
 
 #define MAX_NUM_PROCESS       10
 
-static const std::string TransportNames[] = { "UDP", "TCP", "SharedMemory" };
+static const std::string TransportNames[] = { "TCP", "UDP", "SharedMemory" };
 
 enum Transport {
 	TCP = 1,
