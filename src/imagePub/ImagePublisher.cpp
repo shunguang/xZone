@@ -279,6 +279,7 @@ void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
     
     int frame_number = 1;
     cv::Size size = cv::Size(1, 1);
+    std::cout << "area: " << size.area() * 3 << " pckt size: " << max_packet_size << std::endl;
     while (size.area() * 3 <= max_packet_size) {
         frame_ = cv::Mat(size, CV_8UC3);
         

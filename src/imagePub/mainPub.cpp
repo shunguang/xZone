@@ -30,6 +30,11 @@ using namespace app;
 
 int main(int argc, char* argv[])
 {
+	/*std::cout << "Have " << argc << " arguments:\n";
+	for (int i = 0; i < argc; ++i) {
+		std::cout << argv[i] << "\n";
+	}*/
+
 	if (argc <= 1) {
 		std::cout << "pass a config file" << std::endl;
 		return 0;
@@ -65,7 +70,8 @@ int main(int argc, char* argv[])
 	if (argc >= 3 && std::string(argv[2]) == "pcktsz") { // ./imagePub config.xml pcktsz
 		std::cout << "Packet Size changes" << std::endl;
 		if (argc == 4) {
-			int max_message_size = *argv[3] - '0';
+			std::cout << "Max message packet size " << std::string(argv[3]) << std::endl;
+			int max_message_size = std::stoi(std::string(argv[3]));
 			ImagePublisher mypub(mutex, cfg, 20);
 			if (mypub.init(cfg, use_environment_qos)) {
 				mypub.runPacketSizeVariable(max_message_size);
