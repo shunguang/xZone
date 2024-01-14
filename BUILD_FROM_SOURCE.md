@@ -239,8 +239,11 @@ https://www.eprosima.com/index.php?option=com_ars&view=browses&layout=normal
 	sudo apt-get update && apt-get upgrade -y
 	sudo apt-get install -y cmake g++ wget unzip
 	sudo apt-get install googletest libboost-dev
+
+	sudo apt-get install -y libopencv-ml4.5 libopencv-video4.5 libopencv-calib3d4.5 libopencv-highgui4.5 libopencv-videoio4.5 libopencv-flann4.5 libopencv-imgcodecs4.5 libopencv-imgproc4.5
+
 	# Kinda not really required for opencv contrib
-	# sudo apt-get install ccache libopencv-dev lib32z1 libopenjp2-7-dev libopenexr-dev libva-dev libopenblas-dev libatlas3-base libopenblas-dev liblapack-dev libjna-jni libvtk7-dev libgtk-3-0 libgstreamer1.0-dev libeigen3-dev libharfbuzz-dev libhdf5-dev libjulia-openblas64 libgflags-dev libgoogle-glog-dev libtesseract-dev glogg libv4l-dev
+	# sudo apt-get install -y ccache libopencv-dev lib32z1 libopenjp2-7-dev libopenexr-dev libva-dev libopenblas-dev libatlas3-base libopenblas-dev liblapack-dev libjna-jni libvtk7-dev libgtk-3-0 libgstreamer1.0-dev libeigen3-dev libharfbuzz-dev libhdf5-dev libjulia-openblas64 libgflags-dev libgoogle-glog-dev libtesseract-dev glogg libv4l-dev
 	```
 
 	2. Compile the boost library
@@ -274,7 +277,7 @@ https://www.eprosima.com/index.php?option=com_ars&view=browses&layout=normal
 	mkdir build
 	cd build
 	cmake ..
-	make -j8
+	time make -j8
 	make test
 	sudo make install -j 8
 	cd ../
@@ -286,8 +289,13 @@ https://www.eprosima.com/index.php?option=com_ars&view=browses&layout=normal
 	git clone --jobs $(nproc --all) --depth=1 --single-branch --branch 4.1.1 --recursive https://github.com/opencv/opencv_contrib
 	mkdir -p build
 	cd build
-	cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_PERF_TESTS:BOOL=OFF -DBUILD_TESTS:BOOL=OFF -DBUILD_DOCS:BOOL=OFF -DWITH_CUDA:BOOL=OFF -DBUILD_EXAMPLES:BOOL=OFF -DINSTALL_CREATE_DISTRIB=ON -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DBUILD_SHARED_LIBS=ON -D BUILD_opencv_world=OFF ../opencv
-	make -j$(nproc --all)
+	time cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_PERF_TESTS:BOOL=OFF -DBUILD_TESTS:BOOL=OFF -DBUILD_opencv_apps=OFF -DBUILD_DOCS:BOOL=OFF -DWITH_CUDA:BOOL=OFF -DBUILD_EXAMPLES:BOOL=OFF -DINSTALL_CREATE_DISTRIB=ON -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DBUILD_SHARED_LIBS=ON -D BUILD_opencv_world=OFF ../opencv
+	# compile fast, code fast
+	# cmake -D WITH_TBB=ON -D WITH_OPENMP=ON -D WITH_IPP=ON -D CMAKE_BUILD_TYPE=RELEASE -D BUILD_EXAMPLES=OFF -D WITH_NVCUVID=ON -D WITH_CUDA=ON -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_CSTRIPES=ON -D WITH_OPENCL=ON CMAKE_INSTALL_PREFIX=/usr/local/ ..
+	# compile normally
+	# cmake -D BUILD_EXAMPLES=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D CMAKE_INSTALL_PREFIX=/usr/local/ ..
+
+	time make -j$(nproc --all)
 	sudo make install
 	```
 	Troubleshooting
@@ -340,10 +348,11 @@ https://www.eprosima.com/index.php?option=com_ars&view=browses&layout=normal
 		# Alternative
 		# mkdir fastDDS
 		# cd fastDDS
-		# wget -O eProsima_Fast-DDS-v2.12.1-Linux.tgz https://www.eprosima.com/index.php/component/ars/repository/eprosima-fast-dds/eprosima-fast-dds-2-12-1/eprosima_fast-dds-v2-9-1-linux-tgz?format=raw
+		# wget -O eProsima_Fast-DDS-v2.12.1-Linux.tgz https://www.eprosima.com/index.php/component/ars/repository/eprosima-fast-dds/eprosima-fast-dds-2-12-1/eprosima_fast-dds-v2-12-1-linux-tgz?format=raw
 		# tar xzf eProsima_Fast-DDS-v2.12.1-Linux.tgz
+		# even though it errors "file corrupted", keep going
 		# sudo apt-get install git build-essential cmake libssl-dev libasio-dev libtinyxml2-dev openjdk-11-jre-headless python3
-		# sudo ./install.sh --no-install-dependencies --no-security --build-cores $(nproc --all)
+		# sudo time ./install.sh --no-install-dependencies --no-security --build-cores $(nproc --all)
 		```
 
 		4. The library is now located at /usr/local/lib
@@ -377,6 +386,27 @@ Troubleshooting
 	- link the library that has the definition
 	- make sure the library compiled with the file that has those definitions
 	- [Reverse order of dependencies when passed to linker](https://stackoverflow.com/a/13255594) [Explanation](https://stackoverflow.com/questions/45135/why-does-the-order-in-which-libraries-are-linked-sometimes-cause-errors-in-gcc)
+- undefined reference but code compiles on other platforms? (eg, on a clean machine)
+	- eg `undefined reference to `cv::Mat::Mat(), undefined reference to `cv::Mat::Mat(int, int, int)''
+	Check if symbol exists in library (in this case look for constructor header signatures)
+	```
+	nm -CD /usr/local/lib/libopencv_core.so | grep Mat::Mat
+	```
+
+	You might have multiple library versions installed on the same machine
+	Locate where libraries are installed to
+	```
+	ldconfig -p | grep libopencv_core.so | tr ' ' '\n' | grep /
+	```
+
+	Delete those files (you'll have to reinstall them again or build it from source)
+	eg something like this
+	```
+	sudo apt-get purge libopencv-dev
+	sudo apt-get autoremove
+	sudo apt-get install libopencv-dev
+	```
+
 - Internal Compiler Error?
 	- Click on top project
 	- Press Shift
@@ -384,7 +414,7 @@ Troubleshooting
 	- right click selected area
 	- click properties -> Configuration Properties -> C/C++ -> Optimization -> Whole Program Optimization -> No
 	- Build (Ctrl + Shift + B)
-	- Turn it back off
+	- Turn it back on
 - error while loading shared libraries .... cannot open shared object file: No such file or directory
 
 	**Special note that libraries installed to /lib and /usr/lib are the default trusted directories for shared libraries**
@@ -394,17 +424,24 @@ Troubleshooting
 	Create neccessary links and cache to most recent shared libraries found in the directories specified on the command line
 	[Source](https://stackoverflow.com/questions/480764/linux-error-while-loading-shared-libraries-cannot-open-shared-object-file-no-s)
 	```
-	sudo ldconfig
+	sudo ldconfig -v
 	```
 	Run the binary
 	```
 	./test.out
+	```
+
+	Workaround:
+	```
+	LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu ./imagePub.out config.xml
 	```
 - some random error about fastdds (libMsg project)?
 	- turn off optimizations
 	- build 
 	- turn on back optimizations
 	- build (successful!)
+
+
 
 ### Additional References
 [set-imx8-env-AIO.txt](https://github.com/shunguang/HowTo/blob/master/set-imx8-env-AIO.txt)

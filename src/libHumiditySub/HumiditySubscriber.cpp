@@ -160,9 +160,9 @@ void HumiditySubscriber::SubListener::on_data_available(DataReader* reader)
             samples_++;
             // Print your structure data here.
 
-            //APP_LOG("humidity message received, time captured (t1)=%u, time sent msg out (t2)=%u, time received msg (t3)=%u", humidity_.t1(), humidity_.t2(), APP_TIME_CURRENT_US);
+            //APP_LOG("humidity message received, time captured (t1)=%u, time sent msg out (t2)=%u, time received msg (t3)=%u", humidity_.t1(), humidity_.t2(), APP_TIME_CURRENT_NS);
 
-            file_ << humidity_.index() << "," << APP_TIME_CURRENT_US - humidity_.publisher_send_time() << std::endl;
+            file_ << humidity_.index() << "," << APP_TIME_CURRENT_NS - humidity_.publisher_send_time() << std::endl;
         }
     }
 }

@@ -35,7 +35,6 @@ directories:
 $(TARGETFILE)	:	$(OBJS)
 	$(CXX) $(LFLAGS) $(OBJS) $(LIBS) -o $(TARGETFILE)
 
-
 $(ODIR_OBJ)/mainPub.o	:	$(SDIR_PROJ)/mainPub.cpp
 	$(CXX) -o $(ODIR_OBJ)/mainPub.o $(CFLAGS_EXE) $(SDIR_PROJ)/mainPub.cpp
 

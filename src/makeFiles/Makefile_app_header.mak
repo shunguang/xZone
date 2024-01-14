@@ -9,28 +9,35 @@
 
 # Instead of letting the developer manually say where their project is located why not use pwd, a built in shell command? (type "type pwd" to prove it is built in)
 
-XZONE_ROOT=$(shell pwd)/../../
+XZONE_ROOT=$(shell pwd)/../..
 
 # build intermediate output paths
 SDIR_ROOT=$(XZONE_ROOT)/src
 SDIR_PROJ=$(XZONE_ROOT)/src/$(PROJ_NAME)
 
-$(info $(XZONE_ROOT))
+# $(info $$(XZONE_ROOT) = $(XZONE_ROOT))
 
 ODIR_ROOT=$(XZONE_ROOT)/build
 ODIR_OBJ=$(ODIR_ROOT)/$(PROJ_NAME)
 ODIR_LIB=$(ODIR_ROOT)/libs
 ODIR_BIN=$(ODIR_ROOT)/bin
 
+# gcc -v |& grep -Po "(?<=Target:\s).+"
+TARGET := $(shell gcc -v 2>&1 | grep -Po "(?<=Target:\s).+")
+
+# $(info $$(TARGET) = $(TARGET))
+
 # include and lib paths of the platform
 PLTF_INC=/usr/include
 PLTF_LIB=/usr/lib
 
 BOOST_INC=/usr/include
-BOOST_LIB=/usr/lib/$(arch)-linux-gnu
+BOOST_LIB=/usr/local/lib
+# BOOST_LIB=/usr/lib/$(TARGET)
 
 CV_INC=/usr/include/opencv4
-CV_LIB=/usr/lib/$(arch)-linux-gnu
+CV_LIB=/usr/local/lib
+# CV_LIB=/usr/lib/$(TARGET)
 
 DDS_INC=/usr/local/include
 DDS_LIB=/usr/local/lib

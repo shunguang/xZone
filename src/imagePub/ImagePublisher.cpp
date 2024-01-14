@@ -13,12 +13,12 @@
 // limitations under the License.
 
 #include "ImagePublisher.h"
+#include "libUtil/AppDefs.h"
+
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/rtps/transport/TCPv4TransportDescriptor.h>
 #include <fastdds/rtps/transport/UDPv4TransportDescriptor.h>
 #include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
-// #include <fastdds/rtps/attributes/ThreadSettings.hpp>
-
 #include <fastrtps/utils/IPLocator.h>
 #include <fastdds/dds/publisher/Publisher.hpp>
 #include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
@@ -28,7 +28,7 @@
 #include <list>
 #include <iostream>
 
-#include "libUtil/AppDefs.h"
+#include <opencv2/core/core.hpp>
 
 using namespace eprosima::fastdds::dds;
 using namespace eprosima::fastdds::rtps;
@@ -103,7 +103,7 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
                 participant_qos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
                 // 0 seconds and 2e7 (20,000,000) nanoseconds or 20 miliseconds
                 // this basically is how long should i wait until i should match with the publisher
-                participant_qos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = eprosima::fastrtps::Duration_t(0, 2e7);
+                participant_qos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = eprosima::fastrtps::Duration_t(0, 1);
                 descriptor->add_listener_port(5100);
 
                 participant_qos.transport().user_transports.push_back(descriptor);
@@ -272,9 +272,42 @@ void ImagePublisher::PubListener::on_publication_matched(
     }
 }
 
+void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
+    const int numSamples = cfgPtr_->getCam().numSamples_;
+    uint64_t tBeg = APP_TIME_CURRENT_NS;
+    uint64_t tEnd = APP_TIME_CURRENT_NS;
+    
+    int frame_number = 1;
+    cv::Size size = cv::Size(1, 1);
+    while (size.area() * 3 >= max_packet_size) {
+        frame_ = cv::Mat(size, CV_8UC3);
+        
+        for (uint32_t sample_num = 0; sample_num < numSamples; sample_num++) {
+            acqImgMsg();
+            preparImgMsg(frame_number);
+
+            tEnd = APP_TIME_CURRENT_NS;
+            uint64_t dealayNanosecond = 1e9 / frequency_;
+
+
+            while (tEnd - tBeg <= dealayNanosecond) {
+                tEnd = APP_TIME_CURRENT_NS;
+            }
+
+            if (!publish(false, numSamples)) {
+                std::cout << "unable to send frame number #" << frame_number << std::endl;
+            }
+        }
+
+        frame_number++;
+        size = cv::Size(1, size.height + 1);
+
+        tBeg = APP_TIME_CURRENT_NS;
+    }
+}
+
  void ImagePublisher::runFrequency(int &frame_number)
 {
-     // create a queue of integer data type
     const int numSamples = cfgPtr_->getCam().numSamples_;
     uint64_t tBeg = APP_TIME_CURRENT_NS;
     uint64_t tEnd = APP_TIME_CURRENT_NS;
@@ -285,20 +318,20 @@ void ImagePublisher::PubListener::on_publication_matched(
         preparImgMsg(frame_number);
 
         tEnd = APP_TIME_CURRENT_NS;
-
         uint64_t dealayNanosecond = 1e9 / frequency_;
-    
+
         while (tEnd - tBeg <= dealayNanosecond) {
             tEnd = APP_TIME_CURRENT_NS;
         }
-       
+
         if (!publish(false, numSamples)) {
             std::cout << "unable to send sample #" << sample_num << std::endl;
         }
         frame_number++;
 
         tBeg = APP_TIME_CURRENT_NS;
-      }
+    }
+     
 }
 
 void ImagePublisher::acqImgMsg()

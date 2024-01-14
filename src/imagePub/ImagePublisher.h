@@ -59,6 +59,7 @@ public:
     // Image oneImage);
 
     void runFrequency(int& frame_number);
+    void runPacketSizeVariable(int max_packet_size);
 
 private:
 

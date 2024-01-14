@@ -81,7 +81,7 @@ bool ImageSubscriber::init(
         pqos.wire_protocol().builtin.initialPeersList.push_back(initial_peer_locator);
 
         pqos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
-        pqos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = Duration_t(0, 2e7);
+        pqos.wire_protocol().builtin.discovery_config.leaseDuration_announcementperiod = Duration_t(0, 1);
 
         pqos.transport().use_builtin_transports = false;
         break;

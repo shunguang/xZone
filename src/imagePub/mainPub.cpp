@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 	registerImageTypes();
 	// pass hz frequency param
 	// std::vector<std::thread> threads;
-	
+
 	if (const char* transport = std::getenv("XZONE_TRANSPORT")) {
 		std::cout << "The transport in the config.xml isn't being used" << std::endl;
 		std::cout << "The program will use whatever " << transport << " corresponds to" << std::endl;
@@ -62,19 +62,35 @@ int main(int argc, char* argv[])
 		std::cout << std::endl << std::endl;
 	}
 
-	const int numSamples = cfg->getCam().numSamples_;
-	int frameNum = 1;
-	for (double hz = cfg->getCam().frequency_.start; hz <= cfg->getCam().frequency_.end; hz += cfg->getCam().frequency_.step) {
-		std::cout << "On frequency #" << hz << std::endl << std::endl;
-		std::cout << "sending " << numSamples << " samples at " << hz << std::endl;
-
-		ImagePublisher mypub(mutex, cfg, hz);
-		
-		if (mypub.init(cfg, use_environment_qos)) {
-			mypub.runFrequency(std::ref(frameNum));
+	if (argc >= 3 && std::string(argv[2]) == "pcktsz") { // ./imagePub config.xml pcktsz
+		std::cout << "Packet Size changes" << std::endl;
+		if (argc == 4) {
+			int max_message_size = *argv[3] - '0';
+			ImagePublisher mypub(mutex, cfg, 20);
+			if (mypub.init(cfg, use_environment_qos)) {
+				mypub.runPacketSizeVariable(max_message_size);
+			}
 		}
+		else {
+			std::cout << "You must specify max_message size as the last argument (in bytes)" << std::endl;
+		}
+	} else {
+		std::cout << "Frequency changes" << std::endl;
+		const int numSamples = cfg->getCam().numSamples_;
+		int frameNum = 1;
+		for (double hz = cfg->getCam().frequency_.start; hz <= cfg->getCam().frequency_.end; hz += cfg->getCam().frequency_.step) {
+			std::cout << "On frequency #" << hz << std::endl << std::endl;
+			std::cout << "sending " << numSamples << " samples at " << hz << std::endl;
 
-		std::cout << "in MainPub finished frequency " << hz << std::endl;
+			ImagePublisher mypub(mutex, cfg, hz);
+
+			if (mypub.init(cfg, use_environment_qos)) {
+				mypub.runFrequency(std::ref(frameNum));
+			}
+
+			std::cout << "in MainPub finished frequency " << hz << std::endl;
+		}
+	
 	}
 
 	app::endLogThread();

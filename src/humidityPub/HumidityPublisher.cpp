@@ -220,11 +220,11 @@ bool HumidityPublisher::publish(bool waitForListener, uint32_t frequency)
 {
     if (listener_.firstConnected_ || !waitForListener || listener_.matched_ > 0)
     {
-        humidity_.subscriber_initalize_time(APP_TIME_CURRENT_US);
+        humidity_.subscriber_initalize_time(APP_TIME_CURRENT_NS);
 
         humidity_.humidity(5);
 
-        humidity_.publisher_send_time(APP_TIME_CURRENT_US);
+        humidity_.publisher_send_time(APP_TIME_CURRENT_NS);
 
         writer_->write(&humidity_);
         return true;
