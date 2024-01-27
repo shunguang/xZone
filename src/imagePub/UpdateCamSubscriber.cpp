@@ -1,3 +1,4 @@
+#if 0
 // Copyright 2016 Proyectos y Sistemas de Mantenimiento SL (eProsima).
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -202,3 +203,4 @@ void createUpdateCamSubscriber(std::shared_ptr<std::shared_mutex> mutex, CfgPtr 
     mysub.init(use_environment_qos);
     mysub.run();
 }
+#endif

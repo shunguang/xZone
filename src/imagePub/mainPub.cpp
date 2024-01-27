@@ -85,8 +85,7 @@ int main(int argc, char* argv[])
 		const int numSamples = cfg->getCam().numSamples_;
 		int frameNum = 1;
 		for (double hz = cfg->getCam().frequency_.start; hz <= cfg->getCam().frequency_.end; hz += cfg->getCam().frequency_.step) {
-			std::cout << "On frequency #" << hz << std::endl << std::endl;
-			std::cout << "sending " << numSamples << " samples at " << hz << std::endl;
+			std::cout << "On frequency #" << hz << std::endl;
 
 			ImagePublisher mypub(mutex, cfg, hz);
 
@@ -94,7 +93,7 @@ int main(int argc, char* argv[])
 				mypub.runFrequency(std::ref(frameNum));
 			}
 
-			std::cout << "in MainPub finished frequency " << hz << std::endl;
+			std::cout << "in MainPub finished frequency " << hz << std::endl << std::endl;
 		}
 	
 	}

@@ -137,25 +137,6 @@ const TypeObject* GetMinimalImageObject()
     }
     type_object->minimal().struct_type().member_seq().emplace_back(mst_frame_number);
 
-    MinimalStructMember mst_frequency;
-    mst_frequency.common().member_id(memberId++);
-    mst_frequency.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    mst_frequency.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    mst_frequency.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    mst_frequency.common().member_flags().IS_OPTIONAL(false);
-    mst_frequency.common().member_flags().IS_MUST_UNDERSTAND(false);
-    mst_frequency.common().member_flags().IS_KEY(false);
-    mst_frequency.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_frequency.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint32_t", false));
-
-
-    MD5 frequency_hash("frequency");
-    for(int i = 0; i < 4; ++i)
-    {
-        mst_frequency.detail().name_hash()[i] = frequency_hash.digest[i];
-    }
-    type_object->minimal().struct_type().member_seq().emplace_back(mst_frequency);
-
     MinimalStructMember mst_height;
     mst_height.common().member_id(memberId++);
     mst_height.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
@@ -194,24 +175,24 @@ const TypeObject* GetMinimalImageObject()
     }
     type_object->minimal().struct_type().member_seq().emplace_back(mst_width);
 
-    MinimalStructMember mst_subscriber_initalize_time;
-    mst_subscriber_initalize_time.common().member_id(memberId++);
-    mst_subscriber_initalize_time.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    mst_subscriber_initalize_time.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    mst_subscriber_initalize_time.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    mst_subscriber_initalize_time.common().member_flags().IS_OPTIONAL(false);
-    mst_subscriber_initalize_time.common().member_flags().IS_MUST_UNDERSTAND(false);
-    mst_subscriber_initalize_time.common().member_flags().IS_KEY(false);
-    mst_subscriber_initalize_time.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_subscriber_initalize_time.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint64_t", false));
+    MinimalStructMember mst_publisher_acq_time;
+    mst_publisher_acq_time.common().member_id(memberId++);
+    mst_publisher_acq_time.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
+    mst_publisher_acq_time.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
+    mst_publisher_acq_time.common().member_flags().IS_EXTERNAL(false); // Unsupported
+    mst_publisher_acq_time.common().member_flags().IS_OPTIONAL(false);
+    mst_publisher_acq_time.common().member_flags().IS_MUST_UNDERSTAND(false);
+    mst_publisher_acq_time.common().member_flags().IS_KEY(false);
+    mst_publisher_acq_time.common().member_flags().IS_DEFAULT(false); // Doesn't apply
+    mst_publisher_acq_time.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint64_t", false));
 
 
-    MD5 subscriber_initalize_time_hash("subscriber_initalize_time");
+    MD5 publisher_acq_time_hash("publisher_acq_time");
     for(int i = 0; i < 4; ++i)
     {
-        mst_subscriber_initalize_time.detail().name_hash()[i] = subscriber_initalize_time_hash.digest[i];
+        mst_publisher_acq_time.detail().name_hash()[i] = publisher_acq_time_hash.digest[i];
     }
-    type_object->minimal().struct_type().member_seq().emplace_back(mst_subscriber_initalize_time);
+    type_object->minimal().struct_type().member_seq().emplace_back(mst_publisher_acq_time);
 
     MinimalStructMember mst_publisher_send_time;
     mst_publisher_send_time.common().member_id(memberId++);
@@ -250,25 +231,6 @@ const TypeObject* GetMinimalImageObject()
         mst_subscriber_recieve_time.detail().name_hash()[i] = subscriber_recieve_time_hash.digest[i];
     }
     type_object->minimal().struct_type().member_seq().emplace_back(mst_subscriber_recieve_time);
-
-    MinimalStructMember mst_transport;
-    mst_transport.common().member_id(memberId++);
-    mst_transport.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    mst_transport.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    mst_transport.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    mst_transport.common().member_flags().IS_OPTIONAL(false);
-    mst_transport.common().member_flags().IS_MUST_UNDERSTAND(false);
-    mst_transport.common().member_flags().IS_KEY(false);
-    mst_transport.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    mst_transport.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint32_t", false));
-
-
-    MD5 transport_hash("transport");
-    for(int i = 0; i < 4; ++i)
-    {
-        mst_transport.detail().name_hash()[i] = transport_hash.digest[i];
-    }
-    type_object->minimal().struct_type().member_seq().emplace_back(mst_transport);
 
 
     // Header
@@ -358,22 +320,6 @@ const TypeObject* GetCompleteImageObject()
 
     type_object->complete().struct_type().member_seq().emplace_back(cst_frame_number);
 
-    CompleteStructMember cst_frequency;
-    cst_frequency.common().member_id(memberId++);
-    cst_frequency.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    cst_frequency.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    cst_frequency.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    cst_frequency.common().member_flags().IS_OPTIONAL(false);
-    cst_frequency.common().member_flags().IS_MUST_UNDERSTAND(false);
-    cst_frequency.common().member_flags().IS_KEY(false);
-    cst_frequency.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_frequency.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint32_t", false));
-
-
-    cst_frequency.detail().name("frequency");
-
-    type_object->complete().struct_type().member_seq().emplace_back(cst_frequency);
-
     CompleteStructMember cst_height;
     cst_height.common().member_id(memberId++);
     cst_height.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
@@ -406,21 +352,21 @@ const TypeObject* GetCompleteImageObject()
 
     type_object->complete().struct_type().member_seq().emplace_back(cst_width);
 
-    CompleteStructMember cst_subscriber_initalize_time;
-    cst_subscriber_initalize_time.common().member_id(memberId++);
-    cst_subscriber_initalize_time.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    cst_subscriber_initalize_time.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    cst_subscriber_initalize_time.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    cst_subscriber_initalize_time.common().member_flags().IS_OPTIONAL(false);
-    cst_subscriber_initalize_time.common().member_flags().IS_MUST_UNDERSTAND(false);
-    cst_subscriber_initalize_time.common().member_flags().IS_KEY(false);
-    cst_subscriber_initalize_time.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_subscriber_initalize_time.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint64_t", false));
+    CompleteStructMember cst_publisher_acq_time;
+    cst_publisher_acq_time.common().member_id(memberId++);
+    cst_publisher_acq_time.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
+    cst_publisher_acq_time.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
+    cst_publisher_acq_time.common().member_flags().IS_EXTERNAL(false); // Unsupported
+    cst_publisher_acq_time.common().member_flags().IS_OPTIONAL(false);
+    cst_publisher_acq_time.common().member_flags().IS_MUST_UNDERSTAND(false);
+    cst_publisher_acq_time.common().member_flags().IS_KEY(false);
+    cst_publisher_acq_time.common().member_flags().IS_DEFAULT(false); // Doesn't apply
+    cst_publisher_acq_time.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint64_t", false));
 
 
-    cst_subscriber_initalize_time.detail().name("subscriber_initalize_time");
+    cst_publisher_acq_time.detail().name("publisher_acq_time");
 
-    type_object->complete().struct_type().member_seq().emplace_back(cst_subscriber_initalize_time);
+    type_object->complete().struct_type().member_seq().emplace_back(cst_publisher_acq_time);
 
     CompleteStructMember cst_publisher_send_time;
     cst_publisher_send_time.common().member_id(memberId++);
@@ -453,22 +399,6 @@ const TypeObject* GetCompleteImageObject()
     cst_subscriber_recieve_time.detail().name("subscriber_recieve_time");
 
     type_object->complete().struct_type().member_seq().emplace_back(cst_subscriber_recieve_time);
-
-    CompleteStructMember cst_transport;
-    cst_transport.common().member_id(memberId++);
-    cst_transport.common().member_flags().TRY_CONSTRUCT1(false); // Unsupported
-    cst_transport.common().member_flags().TRY_CONSTRUCT2(false); // Unsupported
-    cst_transport.common().member_flags().IS_EXTERNAL(false); // Unsupported
-    cst_transport.common().member_flags().IS_OPTIONAL(false);
-    cst_transport.common().member_flags().IS_MUST_UNDERSTAND(false);
-    cst_transport.common().member_flags().IS_KEY(false);
-    cst_transport.common().member_flags().IS_DEFAULT(false); // Doesn't apply
-    cst_transport.common().member_type_id(*TypeObjectFactory::get_instance()->get_type_identifier("uint32_t", false));
-
-
-    cst_transport.detail().name("transport");
-
-    type_object->complete().struct_type().member_seq().emplace_back(cst_transport);
 
 
     // Header

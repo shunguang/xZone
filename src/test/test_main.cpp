@@ -43,14 +43,16 @@ int main(int argc, char* argv[])
 	const bool showInConsole = true;
 	startLogThread(logFilename, showInConsole);
 
+	createImageSubscriber(cfg, use_environment_qos);
+
 	//thread humiditySubscriberThread(createHumiditySubscriber, use_environment_qos);
 
-	thread imageSubscriberThread(createImageSubscriber, cfg, use_environment_qos);
+	// thread imageSubscriberThread(createImageSubscriber, cfg, use_environment_qos);
 
 	//thread temperatureSubscriberThread(createTemperatureSubscriber, use_environment_qos);
 	
 	//humiditySubscriberThread.join();
-	imageSubscriberThread.join();
+	// imageSubscriberThread.join();
 	//temperatureSubscriberThread.join();
 
 	endLogThread();

@@ -210,11 +210,11 @@ bool TemperaturePublisher::publish(bool waitForListener, uint32_t frequency)
 {
     if (listener_.firstConnected_ || !waitForListener || listener_.matched_ > 0)
     {
-        temperature_.subscriber_initalize_time(APP_TIME_CURRENT_NS);
+        temperature_.subscriber_initalize_time(APP_TIME_CURRENT_MS);
 
         temperature_.temperature(80);
 
-        temperature_.publisher_send_time(APP_TIME_CURRENT_NS);
+        temperature_.publisher_send_time(APP_TIME_CURRENT_MS);
         return true;
     }
     return false;

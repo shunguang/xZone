@@ -76,7 +76,7 @@ CfgCam& CfgCam::operator = (const CfgCam &x)
 	//todo: m-thread unsafe
 	if (this != &x){
 		CfgBase::operator=(x);
-		cameraId_ 	= x.cameraId_;
+		cameraId_ = x.cameraId_;
 		cameraName_ = x.cameraName_;
 		rtspUrl_	= x.rtspUrl_;
 		valid_		= x.valid_ ;

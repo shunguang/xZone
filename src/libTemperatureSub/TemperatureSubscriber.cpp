@@ -160,11 +160,11 @@ void TemperatureSubscriber::SubListener::on_data_available(DataReader* reader)
             samples_++;
             // Print your structure data here.
 
-            //APP_LOG("temperature message received, time captured (t1)=%u, time sent msg out (t2)=%u, time received msg (t3)=%u", temperature_.t1(), temperature_.t2(), APP_TIME_CURRENT_NS);
+            //APP_LOG("temperature message received, time captured (t1)=%u, time sent msg out (t2)=%u, time received msg (t3)=%u", temperature_.t1(), temperature_.t2(), APP_TIME_CURRENT_MS);
 
             // write data to data.csv file 
             // frame number, frequency, latency
-            file_ << temperature_.index() << "," << APP_TIME_CURRENT_NS - temperature_.publisher_send_time() << std::endl;
+            file_ << temperature_.index() << "," << APP_TIME_CURRENT_MS - temperature_.publisher_send_time() << std::endl;
         }
     }
 }

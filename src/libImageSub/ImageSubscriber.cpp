@@ -39,11 +39,10 @@ ImageSubscriber::ImageSubscriber(CfgPtr cfg)
     , subscriber_(nullptr)
     , topic_(nullptr)
     , reader_(nullptr)
+    , cfg_(cfg)
     , listener_(SubListener(cfg))
     , type_(new ImagePubSubType())
-{
-    cfg_ = cfg;
-}
+{}
 
 bool ImageSubscriber::init(
         bool use_env)
@@ -151,17 +150,14 @@ bool ImageSubscriber::init(
         subscriber_ = participant_->create_subscriber(SUBSCRIBER_QOS_DEFAULT);
     }
   
-
     if (subscriber_ == nullptr)
     {
         return false;
     }
-    std::cout << "create_subscriber" << std::endl;
 
     //CREATE THE TOPIC
     TopicQos tqos = TOPIC_QOS_DEFAULT;
 
-  
     /*
       if (use_env)
     {
@@ -173,7 +169,7 @@ bool ImageSubscriber::init(
         "ImageTopic",
         "Image",
         tqos);
-    std::cout << "create_topic" << std::endl;
+
     if (topic_ == nullptr)
     {
         return false;
@@ -182,29 +178,20 @@ bool ImageSubscriber::init(
     //CREATE THE DATAREADER
 
     DataReaderQos rqos;
-    rqos.history().kind = eprosima::fastdds::dds::KEEP_LAST_HISTORY_QOS;
+    rqos.history().kind = eprosima::fastdds::dds::KEEP_ALL_HISTORY_QOS;
     rqos.history().depth = 30;
-    rqos.resource_limits().max_samples = 50;
-    rqos.resource_limits().allocated_samples = 20;
-    rqos.reliability().kind = eprosima::fastdds::dds::RELIABLE_RELIABILITY_QOS;
+    rqos.resource_limits().max_samples = 5000;
+    rqos.resource_limits().allocated_samples = 100;
+    rqos.reliability().kind = eprosima::fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
     rqos.durability().kind = eprosima::fastdds::dds::TRANSIENT_LOCAL_DURABILITY_QOS;
+
     reader_ = subscriber_->create_datareader(topic_, rqos, &listener_);
-
- //   DataReaderQos rqos;
-  //     rqos.history().kind = eprosima::fastdds::dds::KEEP_LAST_HISTORY_QOS;
- //   rqos.history().depth = 30;
- //   rqos.resource_limits().max_samples = 50;
-  //  rqos.resource_limits().allocated_samples = 20;
-   // rqos.reliability().kind = eprosima::fastdds::dds::RELIABLE_RELIABILITY_QOS;
-    //rqos.durability().kind = eprosima::fastdds::dds::TRANSIENT_LOCAL_DURABILITY_QOS;
-
-    reader_ = subscriber_->create_datareader(topic_, rqos, &listener_, StatusMask::all());
 
     if (reader_ == nullptr)
     {
         return false;
     }
-    std::cout << "create_datareader" << std::endl;
+
     return true;
 }
 
@@ -261,38 +248,22 @@ void ImageSubscriber::SubListener::on_data_available(  DataReader* reader)
     {
         if (info.instance_state == ALIVE_INSTANCE_STATE)
         {
-            samples_++;
-            // Print your structure data here.
+            image_.subscriber_recieve_time(APP_TIME_CURRENT_MS);
 
-            //while (1) {
+            latencyStat_.addSample(image_.subscriber_recieve_time() - image_.publisher_send_time());
 
-            //    cv::Mat frame;
-            //    frame = app::vecUcharToMat(image_.image(), image_.width(), image_.height());
-
-            //    // Display the resulting frame
-            //    cv::imshow("Frame", frame);
-
-            //    // Press  ESC on keyboard to exit
-            //    char c = (char) cv::waitKey(25);
-            //    if (c == 27)
-            //        break;
-            //}
-
-            //APP_LOG("frame number=%u received, time captured (t1)=%u, time sent msg out (t2)=%u, time received msg (t3)=%u", image_.frame_number(), image_.t1(), image_.t2(), APP_TIME_CURRENT_NS);
-
-            // write data to data.csv file 
-            // frame number, frequency, latency
-
-           
-            image_.subscriber_recieve_time(APP_TIME_CURRENT_NS);
-            //if (image_.frame_number() > 100) {
-                latencyStat_.addSample(image_.subscriber_recieve_time() - image_.publisher_send_time());
-            //}
-                
-            file_ << image_.frame_number() << ","  << image_.height() << "," << image_.width() << "," << image_.publisher_send_time() << "," << image_.subscriber_recieve_time() << "," << image_.frequency() << "," << image_.subscriber_recieve_time() - image_.publisher_send_time() << "," << samples_ << "," << image_.transport() << std::endl;
-           // output_data_stringstream_ << image_.frame_number() << "," << image_.height() << "," << image_.width() 
-           //         << "," << image_.publisher_send_time() << "," << image_.subscriber_recieve_time() << "," << image_.frequency() 
-           //         << "," << image_.subscriber_recieve_time() - image_.publisher_send_time() << "," << samples_ << std::endl;
+            if (std::numeric_limits<uint32_t>().max() == image_.frame_number()) {
+                if (cfg_->getCam().frequency_.end == frequency_) {
+                    std::exit(0);
+                }
+                else {
+                    frequency_ += cfg_->getCam().frequency_.step;
+                    createNewLogFile();
+                }
+            }
+            else {
+                file_ << image_.frame_number() << "," << image_.publisher_send_time() << "," << image_.subscriber_recieve_time() << "," << image_.subscriber_recieve_time() - image_.publisher_send_time() << std::endl;
+            }
         }
     }
 }
@@ -301,16 +272,6 @@ void ImageSubscriber::run()
 {
   APP_LOG("subscriber running. Please press enter to stop the Subscriber");
   std::cin.ignore();
-}
-
-void ImageSubscriber::run(uint32_t number)
-{
-    std::cout << "Subscriber running until " << number << "samples have been received" << std::endl;
-    while (number > listener_.samples_)
-    {
-      APP_LOG("HelloWorldSubscriber::run(): sleep 500 ms");
-      std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    }
 }
 
 void createImageSubscriber(CfgPtr cfg, bool use_environment_qos) {

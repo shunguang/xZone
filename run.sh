@@ -8,7 +8,8 @@ do
     export XZONE_TRANSPORT=$transport
     ./test.out config.xml & 
     testPid=$!
-    ./imagePub.out config.xml pcktsz 15000 &
+    # ./imagePub.out config.xml pcktsz 15000 &
+    ./imagePub.out config.xml &
     imagePubId=$!
 
     # Check if the process is still running

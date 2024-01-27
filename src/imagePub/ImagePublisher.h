@@ -50,12 +50,12 @@ public:
     void acqImgMsg();
 
     // prepare metadata about image
-    void preparImgMsg(const uint32_t frameNum);
+    void preparImgMsg(const int frameNum);
 
     //!Publish a sample
     bool publish(
         bool waitForListener,
-        uint32_t frequency);
+        int frequency);
     // Image oneImage);
 
     void runFrequency(int& frame_number);

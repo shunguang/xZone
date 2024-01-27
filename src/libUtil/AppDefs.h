@@ -144,6 +144,7 @@
 #define USLEEP_1_MILSEC		1000
 
 #define APP_SLEEP( ms )   boost::this_thread::sleep(boost::posix_time::milliseconds(ms))
+#define APP_SLEEP2( us )   boost::this_thread::sleep(boost::posix_time::microseconds(us))
 
 #ifdef __GNUC__
 #define  sscanf_s  sscanf

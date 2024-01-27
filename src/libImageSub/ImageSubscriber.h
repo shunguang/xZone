@@ -42,10 +42,6 @@ public:
     //!RUN the subscriber
     void run();
 
-    //!Run the subscriber until number samples have been received.
-    void run(
-            uint32_t number);
-
 private:
 
     eprosima::fastdds::dds::DomainParticipant* participant_;
@@ -66,20 +62,10 @@ private:
 
         SubListener(app::CfgPtr cfg)
             : matched_(0)
-            , samples_(0)
             , file_(std::ofstream())
+            , frequency_(cfg->getCam().frequency_.start)
             , cfg_(cfg)
         {
-            boost::filesystem::path dir("logs");
-
-            if (!boost::filesystem::exists(dir)) {
-                std::cout << "logs folder doesn't Exist" << std::endl;
-
-                if (boost::filesystem::create_directory(dir)) {
-                    std::cout << "....Successfully Created logs folder !" << std::endl;
-                }
-            }
-
             // https://stackoverflow.com/questions/38034033/c-localtime-this-function-or-variable-may-be-unsafe
             time_t t = std::time(nullptr);
 
@@ -94,12 +80,17 @@ private:
                 bt = *std::localtime(&t);
             #endif
 
-            std::stringstream currentDateTime;
-            currentDateTime << TransportNames[cfg->getTransport()-1] << "_" << std::to_string(cfg->getCam().imgSz_.h) << "_" << std::to_string(cfg->getCam().imgSz_.w) << "_" << std::put_time(&bt, "%Y%m%d%H%M%S");
-            std::string outPutFile = "logs/image_pubsub_data"+ currentDateTime.str() +".csv";
-            file_.open(outPutFile, std::ofstream::out | std::ofstream::trunc);
-            std::cout << "Opened " + outPutFile +"..appending to file" << std::endl;
-            file_ << "frame number,image_height,image_width,publisher_sent,subscriber_received,frequency,latency,packets_receieved_count,transport" << std::endl;
+            startTime << std::put_time(&bt, "%Y%m%d%H%M%S");
+
+            std::string folderName = "logs/" + startTime.str();
+            if (boost::filesystem::create_directory(folderName)) {
+                std::cout << "Successfully created " << folderName << " folder" << std::endl;
+            }
+            else {
+                std::cout << "Could not create " << folderName << " folder." << std::endl;
+            }
+
+            createNewLogFile();
         }
 
         ~SubListener() override
@@ -113,16 +104,46 @@ private:
             eprosima::fastdds::dds::DataReader* reader,
             const eprosima::fastdds::dds::SubscriptionMatchedStatus& info) override;
 
+        void createNewLogFile() {
+            boost::filesystem::path dir("logs");
+
+            if (!boost::filesystem::exists(dir)) {
+                std::cout << "logs folder doesn't Exist" << std::endl;
+
+                if (boost::filesystem::create_directory(dir)) {
+                    std::cout << "Successfully created logs folder" << std::endl;
+                }
+                else {
+                    std::cout << "Could not create logs folder." << std::endl;
+                }
+            }
+            
+            std::string height = std::to_string(cfg_->getCam().imgSz_.h);
+            std::string width = std::to_string(cfg_->getCam().imgSz_.w);
+            std::string transport = TransportNames[cfg_->getTransport() - 1];
+            std::string frequency = std::to_string(frequency_);
+
+            std::stringstream fileName;
+            fileName << transport << "_" << frequency_ << "_" << height << "_" << width;
+            std::string outPutFile = "logs/" + startTime.str()  +"/image_" + fileName.str() + ".csv";
+
+            file_ = std::ofstream();
+            file_.open(outPutFile, std::ofstream::out | std::ofstream::trunc);
+            std::cout << "Opened " + outPutFile + " ..appending to file" << std::endl;
+            file_ << "frame number,publisher_sent,subscriber_received,latency" << std::endl;
+        }
+
         app::CfgPtr  cfg_;
 
         Image image_;
 
         int matched_;
-      
-        uint32_t samples_;
 
-        std::stringstream output_data_stringstream_;
+        std::stringstream startTime;
+
         std::ofstream file_;
+
+        int frequency_;
 
         app::AppMeanStd<uint32_t> latencyStat_;
     } listener_;

@@ -99,6 +99,7 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
                 std::shared_ptr<TCPv4TransportDescriptor> descriptor = std::make_shared<TCPv4TransportDescriptor>();
                 descriptor->sendBufferSize = 0;
                 descriptor->receiveBufferSize = 0;
+                //descriptor->enable_tcp_nodelay = true;
 
                 participant_qos.wire_protocol().builtin.discovery_config.leaseDuration = eprosima::fastrtps::c_TimeInfinite;
                 // 0 seconds and 2e7 (20,000,000) nanoseconds or 20 miliseconds
@@ -157,7 +158,6 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
         return false;
     }
 
-
     topic_ = participant_->create_topic(
         "ImageTopic",
         "Image", TOPIC_QOS_DEFAULT);
@@ -174,13 +174,13 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
         publisher_->get_default_datawriter_qos(wqos);
     }
     
-    wqos.history().kind = KEEP_LAST_HISTORY_QOS;
+    wqos.history().kind = KEEP_ALL_HISTORY_QOS;
     wqos.history().depth = 30;
-    wqos.resource_limits().max_samples = 50;
-    wqos.resource_limits().allocated_samples = 20;
+    wqos.resource_limits().max_samples = 5000;
+    wqos.resource_limits().allocated_samples = 100;
     wqos.reliable_writer_qos().times.heartbeatPeriod.seconds = 2;
     wqos.reliable_writer_qos().times.heartbeatPeriod.nanosec = 200 * 1000 * 1000;
-    wqos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+    wqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
 
     writer_ = publisher_->create_datawriter(topic_, wqos, &listener_);
 
@@ -188,7 +188,7 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     {
         return false;
     }
-    // std::cout << "create_datawriter " << &image_.frame_number() << std::endl;
+
     return true;
 }
 
@@ -274,8 +274,8 @@ void ImagePublisher::PubListener::on_publication_matched(
 
 void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
     const int numSamples = cfgPtr_->getCam().numSamples_;
-    uint64_t tBeg = APP_TIME_CURRENT_NS;
-    uint64_t tEnd = APP_TIME_CURRENT_NS;
+    uint64_t tBeg = APP_TIME_CURRENT_MS;
+    uint64_t tEnd = APP_TIME_CURRENT_MS;
     
     int frame_number = 1;
     cv::Size size = cv::Size(1, 1);
@@ -287,14 +287,6 @@ void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
             acqImgMsg();
             preparImgMsg(frame_number);
 
-            tEnd = APP_TIME_CURRENT_NS;
-            uint64_t dealayNanosecond = 1e9 / frequency_;
-
-
-            while (tEnd - tBeg <= dealayNanosecond) {
-                tEnd = APP_TIME_CURRENT_NS;
-            }
-
             if (!publish(false, numSamples)) {
                 std::cout << "unable to send frame number #" << frame_number << std::endl;
             }
@@ -303,61 +295,65 @@ void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
         frame_number++;
         size = cv::Size(1, size.height + 1);
 
-        tBeg = APP_TIME_CURRENT_NS;
+        tBeg = APP_TIME_CURRENT_MS;
     }
 }
 
  void ImagePublisher::runFrequency(int &frame_number)
 {
     const int numSamples = cfgPtr_->getCam().numSamples_;
-    uint64_t tBeg = APP_TIME_CURRENT_NS;
-    uint64_t tEnd = APP_TIME_CURRENT_NS;
+    uint64_t delayMacrosecond = 1e6 / frequency_;
+    uint64_t tBeg = APP_TIME_CURRENT_MS;
+    uint64_t tEnd = APP_TIME_CURRENT_MS;
 
     std::cout << "sending " << numSamples << " samples at " << frequency_ << std::endl;
-    for (uint32_t sample_num = 0; sample_num < numSamples; sample_num++) {
-        acqImgMsg();
+    for (int sample_num = 0; sample_num < numSamples; sample_num++) {
+        tBeg = APP_TIME_CURRENT_MS;
+
         preparImgMsg(frame_number);
+        acqImgMsg();
 
-        tEnd = APP_TIME_CURRENT_NS;
-        uint64_t dealayNanosecond = 1e9 / frequency_;
-
-        while (tEnd - tBeg <= dealayNanosecond) {
-            tEnd = APP_TIME_CURRENT_NS;
-        }
-
-        if (!publish(false, numSamples)) {
+        if (!publish(false, sample_num)) {
             std::cout << "unable to send sample #" << sample_num << std::endl;
         }
-        frame_number++;
 
-        tBeg = APP_TIME_CURRENT_NS;
+        tEnd = APP_TIME_CURRENT_MS;
+        
+        APP_SLEEP2(delayMacrosecond);
+
+        frame_number++;        
     }
      
 }
 
 void ImagePublisher::acqImgMsg()
 {
+    //image_.frame_number();
   // https://learnopencv.com/read-write-and-display-a-video-using-opencv-cpp-python/
-  image_.subscriber_initalize_time(APP_TIME_CURRENT_NS);
+  image_.publisher_acq_time(APP_TIME_CURRENT_MS);
 }
 
-void ImagePublisher::preparImgMsg( const uint32_t frameNum )
+void ImagePublisher::preparImgMsg( const int frameNum )
 {
   image_.frame_number(frameNum);
-  image_.frequency(frequency_);
   image_.image(app::matToVecUchar(frame_));
   image_.width(frame_.cols);
   image_.height(frame_.rows);
-  image_.transport(cfgPtr_->getTransport());
 }
 
-bool ImagePublisher::publish(bool waitForListener, uint32_t frequency)
+bool ImagePublisher::publish(bool waitForListener, int sampleNum)
 {
     if (listener_.firstConnected_ || !waitForListener || listener_.matched_ > 0)
     {
-        image_.publisher_send_time(APP_TIME_CURRENT_NS);
+        image_.publisher_send_time(APP_TIME_CURRENT_MS);
         writer_->write(&image_);
-        return true;
+
+        std::cout << "on sample num: " << sampleNum << std::endl;
+        if (cfgPtr_->getCam().numSamples_ - 1 == sampleNum) {
+            image_.frame_number(std::numeric_limits<uint32_t>().max());
+            writer_->write(&image_);
+        }
+        return true;       
     }
     return false;
 }

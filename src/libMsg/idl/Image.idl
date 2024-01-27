@@ -4,12 +4,10 @@ struct Image
 {
 	sequence<octet> image;
 	unsigned long frame_number;
-	unsigned long frequency;
 	unsigned long height;
 	unsigned long width;
 
-	unsigned long long subscriber_initalize_time; // t1
+	unsigned long long publisher_acq_time; // t1
 	unsigned long long publisher_send_time; // t2
 	unsigned long long subscriber_recieve_time; // t3
-	unsigned long transport;
 };

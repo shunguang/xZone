@@ -56,13 +56,11 @@ Image::Image(
 {
     m_image = x.m_image;
     m_frame_number = x.m_frame_number;
-    m_frequency = x.m_frequency;
     m_height = x.m_height;
     m_width = x.m_width;
-    m_subscriber_initalize_time = x.m_subscriber_initalize_time;
+    m_publisher_acq_time = x.m_publisher_acq_time;
     m_publisher_send_time = x.m_publisher_send_time;
     m_subscriber_recieve_time = x.m_subscriber_recieve_time;
-    m_transport = x.m_transport;
 }
 
 Image::Image(
@@ -70,13 +68,11 @@ Image::Image(
 {
     m_image = std::move(x.m_image);
     m_frame_number = x.m_frame_number;
-    m_frequency = x.m_frequency;
     m_height = x.m_height;
     m_width = x.m_width;
-    m_subscriber_initalize_time = x.m_subscriber_initalize_time;
+    m_publisher_acq_time = x.m_publisher_acq_time;
     m_publisher_send_time = x.m_publisher_send_time;
     m_subscriber_recieve_time = x.m_subscriber_recieve_time;
-    m_transport = x.m_transport;
 }
 
 Image& Image::operator =(
@@ -85,13 +81,11 @@ Image& Image::operator =(
 
     m_image = x.m_image;
     m_frame_number = x.m_frame_number;
-    m_frequency = x.m_frequency;
     m_height = x.m_height;
     m_width = x.m_width;
-    m_subscriber_initalize_time = x.m_subscriber_initalize_time;
+    m_publisher_acq_time = x.m_publisher_acq_time;
     m_publisher_send_time = x.m_publisher_send_time;
     m_subscriber_recieve_time = x.m_subscriber_recieve_time;
-    m_transport = x.m_transport;
     return *this;
 }
 
@@ -101,13 +95,11 @@ Image& Image::operator =(
 
     m_image = std::move(x.m_image);
     m_frame_number = x.m_frame_number;
-    m_frequency = x.m_frequency;
     m_height = x.m_height;
     m_width = x.m_width;
-    m_subscriber_initalize_time = x.m_subscriber_initalize_time;
+    m_publisher_acq_time = x.m_publisher_acq_time;
     m_publisher_send_time = x.m_publisher_send_time;
     m_subscriber_recieve_time = x.m_subscriber_recieve_time;
-    m_transport = x.m_transport;
     return *this;
 }
 
@@ -116,13 +108,11 @@ bool Image::operator ==(
 {
     return (m_image == x.m_image &&
            m_frame_number == x.m_frame_number &&
-           m_frequency == x.m_frequency &&
            m_height == x.m_height &&
            m_width == x.m_width &&
-           m_subscriber_initalize_time == x.m_subscriber_initalize_time &&
+           m_publisher_acq_time == x.m_publisher_acq_time &&
            m_publisher_send_time == x.m_publisher_send_time &&
-           m_subscriber_recieve_time == x.m_subscriber_recieve_time &&
-           m_transport == x.m_transport);
+           m_subscriber_recieve_time == x.m_subscriber_recieve_time);
 }
 
 bool Image::operator !=(
@@ -200,35 +190,6 @@ uint32_t& Image::frame_number()
 
 
 /*!
- * @brief This function sets a value in member frequency
- * @param _frequency New value for member frequency
- */
-void Image::frequency(
-        uint32_t _frequency)
-{
-    m_frequency = _frequency;
-}
-
-/*!
- * @brief This function returns the value of member frequency
- * @return Value of member frequency
- */
-uint32_t Image::frequency() const
-{
-    return m_frequency;
-}
-
-/*!
- * @brief This function returns a reference to member frequency
- * @return Reference to member frequency
- */
-uint32_t& Image::frequency()
-{
-    return m_frequency;
-}
-
-
-/*!
  * @brief This function sets a value in member height
  * @param _height New value for member height
  */
@@ -287,31 +248,31 @@ uint32_t& Image::width()
 
 
 /*!
- * @brief This function sets a value in member subscriber_initalize_time
- * @param _subscriber_initalize_time New value for member subscriber_initalize_time
+ * @brief This function sets a value in member publisher_acq_time
+ * @param _publisher_acq_time New value for member publisher_acq_time
  */
-void Image::subscriber_initalize_time(
-        uint64_t _subscriber_initalize_time)
+void Image::publisher_acq_time(
+        uint64_t _publisher_acq_time)
 {
-    m_subscriber_initalize_time = _subscriber_initalize_time;
+    m_publisher_acq_time = _publisher_acq_time;
 }
 
 /*!
- * @brief This function returns the value of member subscriber_initalize_time
- * @return Value of member subscriber_initalize_time
+ * @brief This function returns the value of member publisher_acq_time
+ * @return Value of member publisher_acq_time
  */
-uint64_t Image::subscriber_initalize_time() const
+uint64_t Image::publisher_acq_time() const
 {
-    return m_subscriber_initalize_time;
+    return m_publisher_acq_time;
 }
 
 /*!
- * @brief This function returns a reference to member subscriber_initalize_time
- * @return Reference to member subscriber_initalize_time
+ * @brief This function returns a reference to member publisher_acq_time
+ * @return Reference to member publisher_acq_time
  */
-uint64_t& Image::subscriber_initalize_time()
+uint64_t& Image::publisher_acq_time()
 {
-    return m_subscriber_initalize_time;
+    return m_publisher_acq_time;
 }
 
 
@@ -370,35 +331,6 @@ uint64_t Image::subscriber_recieve_time() const
 uint64_t& Image::subscriber_recieve_time()
 {
     return m_subscriber_recieve_time;
-}
-
-
-/*!
- * @brief This function sets a value in member transport
- * @param _transport New value for member transport
- */
-void Image::transport(
-        uint32_t _transport)
-{
-    m_transport = _transport;
-}
-
-/*!
- * @brief This function returns the value of member transport
- * @return Value of member transport
- */
-uint32_t Image::transport() const
-{
-    return m_transport;
-}
-
-/*!
- * @brief This function returns a reference to member transport
- * @return Reference to member transport
- */
-uint32_t& Image::transport()
-{
-    return m_transport;
 }
 
 

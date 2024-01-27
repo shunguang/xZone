@@ -178,26 +178,6 @@ public:
 
 
     /*!
-     * @brief This function sets a value in member frequency
-     * @param _frequency New value for member frequency
-     */
-    eProsima_user_DllExport void frequency(
-            uint32_t _frequency);
-
-    /*!
-     * @brief This function returns the value of member frequency
-     * @return Value of member frequency
-     */
-    eProsima_user_DllExport uint32_t frequency() const;
-
-    /*!
-     * @brief This function returns a reference to member frequency
-     * @return Reference to member frequency
-     */
-    eProsima_user_DllExport uint32_t& frequency();
-
-
-    /*!
      * @brief This function sets a value in member height
      * @param _height New value for member height
      */
@@ -238,23 +218,23 @@ public:
 
 
     /*!
-     * @brief This function sets a value in member subscriber_initalize_time
-     * @param _subscriber_initalize_time New value for member subscriber_initalize_time
+     * @brief This function sets a value in member publisher_acq_time
+     * @param _publisher_acq_time New value for member publisher_acq_time
      */
-    eProsima_user_DllExport void subscriber_initalize_time(
-            uint64_t _subscriber_initalize_time);
+    eProsima_user_DllExport void publisher_acq_time(
+            uint64_t _publisher_acq_time);
 
     /*!
-     * @brief This function returns the value of member subscriber_initalize_time
-     * @return Value of member subscriber_initalize_time
+     * @brief This function returns the value of member publisher_acq_time
+     * @return Value of member publisher_acq_time
      */
-    eProsima_user_DllExport uint64_t subscriber_initalize_time() const;
+    eProsima_user_DllExport uint64_t publisher_acq_time() const;
 
     /*!
-     * @brief This function returns a reference to member subscriber_initalize_time
-     * @return Reference to member subscriber_initalize_time
+     * @brief This function returns a reference to member publisher_acq_time
+     * @return Reference to member publisher_acq_time
      */
-    eProsima_user_DllExport uint64_t& subscriber_initalize_time();
+    eProsima_user_DllExport uint64_t& publisher_acq_time();
 
 
     /*!
@@ -296,37 +276,15 @@ public:
      */
     eProsima_user_DllExport uint64_t& subscriber_recieve_time();
 
-
-    /*!
-     * @brief This function sets a value in member transport
-     * @param _transport New value for member transport
-     */
-    eProsima_user_DllExport void transport(
-            uint32_t _transport);
-
-    /*!
-     * @brief This function returns the value of member transport
-     * @return Value of member transport
-     */
-    eProsima_user_DllExport uint32_t transport() const;
-
-    /*!
-     * @brief This function returns a reference to member transport
-     * @return Reference to member transport
-     */
-    eProsima_user_DllExport uint32_t& transport();
-
 private:
 
     std::vector<uint8_t> m_image;
     uint32_t m_frame_number{0};
-    uint32_t m_frequency{0};
     uint32_t m_height{0};
     uint32_t m_width{0};
-    uint64_t m_subscriber_initalize_time{0};
+    uint64_t m_publisher_acq_time{0};
     uint64_t m_publisher_send_time{0};
     uint64_t m_subscriber_recieve_time{0};
-    uint32_t m_transport{0};
 
 };
 

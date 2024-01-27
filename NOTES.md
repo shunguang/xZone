@@ -134,3 +134,73 @@ formula to get mb
 - 4096 x 2160 is 26,542,080 bytes or 26.5 mb
 - 7680 x 4320 is 99,532,800 bytes or 99.5 mb
 - 15360 × 8640 is 398,131,200 bytes or 398 mb
+
+Quick build
+- If only modified header, delete the library or executable that includes the header
+
+# count lines in file
+cat image_pubsub_dataTCP_360_480_20240114193936.csv | wc -l
+
+use macrosecond
+
+make python script to determine lost frames
+
+make program run each frequencies independently, writing a file for each frequency
+each file generates one dot on the graph
+
+for freq
+
+subscriber must be aware of when to close the file (must be aware of handling multiple messages)
+- when last message send frame_number 0xfffff max number
+
+send out a fixed size, for tcp
+tcp there are 10 files for 10 frequencies
+change udp same with 10 frequencies
+
+10 files for 10 
+shared memory etc
+
+tcp there are 10 files for 10 frequencies
+
+change udp same with 10 freicneis
+
+10 files for 10 
+shared memory etc
+
+## reliability plays a big role
+```
+# very slow ~2 seconds
+DataReaderQos rqos;
+rqos.reliability().kind = eprosima::fastdds::dds::RELIABLE_RELIABILITY_QOS;
+
+DataWriterQos wqos = DATAWRITER_QOS_DEFAULT;
+wqos.reliability().kind = RELIABLE_RELIABILITY_QOS;
+```
+
+```
+# very fast ~2 miliseconds
+DataReaderQos rqos;
+rqos.reliability().kind = eprosima::fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
+
+DataWriterQos wqos = DATAWRITER_QOS_DEFAULT;
+wqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
+```
+
+
+1/28/2024
+***high priority***
+run jetson tx2
+run on cubox as well
+
+todo: use miliseconds for latency
+
+2. measure lost messages
+
+3. still reorganize file
+- each image and frequency in a single file, python script will plot a single point for each file
+
+- look at relationship between small, medium and huge image sizes
+- three controls, frqeuency and image size, and transport protocol
+
+low priority
+write (bash) script to automate pipeline

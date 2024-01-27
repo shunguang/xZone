@@ -32,6 +32,11 @@ an open source project for monitoring and controling multiple sensors in a centr
 
 After compiling the application you must write a configuration file see [Configuration.md](CONFIGURATION.md) for details
 
+# Subscriber not quitting?
+```
+wmic process where name="test.exe" call terminate
+```
+
 # Building from source
 
 see [BUILD_FROM_SOURCE.md](BUILD_FROM_SOURCE.md)
