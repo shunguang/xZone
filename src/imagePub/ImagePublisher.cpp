@@ -348,7 +348,6 @@ bool ImagePublisher::publish(bool waitForListener, int sampleNum)
         image_.publisher_send_time(APP_TIME_CURRENT_MS);
         writer_->write(&image_);
 
-        std::cout << "on sample num: " << sampleNum << std::endl;
         if (cfgPtr_->getCam().numSamples_ - 1 == sampleNum) {
             image_.frame_number(std::numeric_limits<uint32_t>().max());
             writer_->write(&image_);

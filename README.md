@@ -32,6 +32,10 @@ an open source project for monitoring and controling multiple sensors in a centr
 
 After compiling the application you must write a configuration file see [Configuration.md](CONFIGURATION.md) for details
 
+# Program last executed on
+- windows 22H2
+- ubuntu 22.04
+
 # Subscriber not quitting?
 ```
 wmic process where name="test.exe" call terminate

@@ -125,7 +125,7 @@ private:
 
             std::stringstream fileName;
             fileName << transport << "_" << frequency_ << "_" << height << "_" << width;
-            std::string outPutFile = "logs/" + startTime.str()  +"/image_" + fileName.str() + ".csv";
+            std::string outPutFile = "logs/" + startTime.str() + "/image_" + fileName.str() + ".csv";
 
             file_ = std::ofstream();
             file_.open(outPutFile, std::ofstream::out | std::ofstream::trunc);

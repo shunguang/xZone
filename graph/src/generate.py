@@ -39,7 +39,7 @@ def addLegend(pattern: str, transport: str, color: str):
         err.append(df["latency"].std())
     
     # fmt='none' to prevent the lines from connecting
-    ax.errorbar(x, y, yerr=err, fmt='o', label=transport)
+    ax.errorbar(x, y, yerr=err, fmt='o', label=transport, ecolor=color)
 
 addLegend(f"{folder}/*TCP*.csv", "TCP", "tab:purple")
 # addLegend(f"{folder}/UDP.csv", "UDP", "tab:green")
