@@ -246,6 +246,10 @@ Ubuntu 18.04
 sudo apt-get install gcc-8 g++-8
 sudo ln /usr/bin/gcc-8 /usr/bin/gcc
 sudo ln /usr/bin/g++-8 /usr/bin/g++
+
+# opencv 4.1.1 was compiled and installed from source
+# https://github.com/justadudewhohacks/opencv4nodejs/issues/645#issuecomment-574777079
+sudo ln -s /usr/local/include/opencv4/opencv2/ /usr/local/include/opencv2
 ```
 
 1. set up dependencies

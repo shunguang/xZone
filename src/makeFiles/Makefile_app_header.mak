@@ -53,11 +53,11 @@ DEBUG = -DNDEBUG -g
 #DEBUG = -DDEBUG -g
 
 #include flags for building libs
-CFLAGS = -Wall -std=c++17 -static -c $(DEBUG) -DECL_STANDALONE=1 -DqDNGDebug=1 -D__xlC__=1 -DNO_FCGI_DEFINES=1 -DqDNGUseStdInt=0 -DUNIX_ENV=1 -D__LITTLE_ENDIAN__=1 -DqMacOS=0 -DqWinOS=0 -std=gnu++17 \
+CFLAGS = -Wall -lstdc++fs -static -c $(DEBUG) -DECL_STANDALONE=1 -DqDNGDebug=1 -D__xlC__=1 -DNO_FCGI_DEFINES=1 -DqDNGUseStdInt=0 -DUNIX_ENV=1 -D__LITTLE_ENDIAN__=1 -DqMacOS=0 -DqWinOS=0 -std=gnu++17 \
 	-I$(SDIR_PROJ) -I$(SDIR_ROOT) -I$(DDS_INC) -I$(CV_INC) -I$(BOOST_INC) -I$(PLTF_INC)
 
 #include flags for building executable
-CFLAGS_EXE	:= -Wall -std=c++17 -c $(DEBUG) -DECL_STANDALONE=1 -DqDNGDebug=1 -D__xlC__=1 -DNO_FCGI_DEFINES=1 -DqDNGUseStdInt=0 -DUNIX_ENV=1 -D__LITTLE_ENDIAN__=1 -DqMacOS=0 -DqWinOS=0 -std=gnu++17 \
+CFLAGS_EXE	:= -Wall -lstdc++fs -c $(DEBUG) -DECL_STANDALONE=1 -DqDNGDebug=1 -D__xlC__=1 -DNO_FCGI_DEFINES=1 -DqDNGUseStdInt=0 -DUNIX_ENV=1 -D__LITTLE_ENDIAN__=1 -DqMacOS=0 -DqWinOS=0 -std=gnu++17 \
 	-I$(SDIR_PROJ) -I$(SDIR_ROOT) -I$(DDS_INC) -I$(CV_INC) -I$(BOOST_INC) -I$(PLTF_INC)
 
 #link flags and lib searching paths

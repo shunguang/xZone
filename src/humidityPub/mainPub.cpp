@@ -35,9 +35,6 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	// visual studio debugging purposes
-	std::cout << std::filesystem::current_path() << std::endl;
-
 	CfgPtr cfg(new Cfg());
 	cfg->readFromFile(argv[1]);
 
