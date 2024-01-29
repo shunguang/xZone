@@ -63,7 +63,7 @@ https://www.eprosima.com/index.php?option=com_ars&view=browses&layout=normal
 		git clone --jobs $env:NUMBER_OF_PROCESSORS --depth=1 --single-branch --branch boost-1.71.0 --recursive https://github.com/boostorg/boost
 		cd boost
 		.\bootstrap
-		.\b2
+		.\b2 -j $env:NUMBER_OF_PROCESSORS
 		```
 		**Boost Libraries are located at stage/lib**
 
@@ -231,6 +231,23 @@ https://www.eprosima.com/index.php?option=com_ars&view=browses&layout=normal
 
 ### linux
 
+Installing cmake (from github repository)
+Example
+```
+wget https://github.com/Kitware/CMake/releases/download/v3.28.1/cmake-3.28.1-linux-aarch64.sh
+sudo mkdir /opt/cmake
+sudo sh cmake-3.28.1-linux-aarch64.sh --prefix=/opt/cmake
+sudo ln -s /opt/cmake/cmake-3.28.1-linux-aarch64/bin/cmake /usr/local/bin/cmake
+```
+
+Upgrade gcc (7.0.0+?)
+Ubuntu 18.04
+```
+sudo apt-get install gcc-8 g++-8
+sudo ln /usr/bin/gcc-8 /usr/bin/gcc
+sudo ln /usr/bin/g++-8 /usr/bin/g++
+```
+
 1. set up dependencies
 	#### Ubuntu
 	1. Install prebuilt dependencies of the latest version
@@ -243,7 +260,7 @@ https://www.eprosima.com/index.php?option=com_ars&view=browses&layout=normal
 	sudo apt-get install -y libopencv-ml4.5 libopencv-video4.5 libopencv-calib3d4.5 libopencv-highgui4.5 libopencv-videoio4.5 libopencv-flann4.5 libopencv-imgcodecs4.5 libopencv-imgproc4.5
 
 	# Kinda not really required for opencv contrib
-	# sudo apt-get install -y ccache libopencv-dev lib32z1 libopenjp2-7-dev libopenexr-dev libva-dev libopenblas-dev libatlas3-base libopenblas-dev liblapack-dev libjna-jni libvtk7-dev libgtk-3-0 libgstreamer1.0-dev libeigen3-dev libharfbuzz-dev libhdf5-dev libjulia-openblas64 libgflags-dev libgoogle-glog-dev libtesseract-dev glogg libv4l-dev
+	# sudo apt-get install -y ccache lib32z1 libopenjp2-7-dev libopenexr-dev libva-dev libopenblas-dev libatlas3-base libopenblas-dev liblapack-dev libjna-jni libvtk7-dev libgtk-3-0 libgstreamer1.0-dev libeigen3-dev libharfbuzz-dev libhdf5-dev libjulia-openblas64 libgflags-dev libgoogle-glog-dev libtesseract-dev glogg libv4l-dev
 	```
 
 	2. Compile the boost library
@@ -290,15 +307,20 @@ https://www.eprosima.com/index.php?option=com_ars&view=browses&layout=normal
 	mkdir -p build
 	cd build
 	time cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_PERF_TESTS:BOOL=OFF -DBUILD_TESTS:BOOL=OFF -DBUILD_opencv_apps=OFF -DBUILD_DOCS:BOOL=OFF -DWITH_CUDA:BOOL=OFF -DBUILD_EXAMPLES:BOOL=OFF -DINSTALL_CREATE_DISTRIB=ON -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -DBUILD_SHARED_LIBS=ON -D BUILD_opencv_world=OFF ../opencv
+	
+	# more commands for compiling opencv without contrib
 	# compile fast, code fast
-	# cmake -D WITH_TBB=ON -D WITH_OPENMP=ON -D WITH_IPP=ON -D CMAKE_BUILD_TYPE=RELEASE -D BUILD_EXAMPLES=OFF -D WITH_NVCUVID=ON -D WITH_CUDA=ON -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_CSTRIPES=ON -D WITH_OPENCL=ON CMAKE_INSTALL_PREFIX=/usr/local/ ..
+	# cmake -D WITH_TBB=ON -D WITH_OPENMP=ON -D WITH_IPP=ON -D CMAKE_BUILD_TYPE=RELEASE -D BUILD_EXAMPLES=OFF -D WITH_NVCUVID=ON -D WITH_CUDA=ON -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D WITH_CSTRIPES=ON -D WITH_OPENCL=ON CMAKE_INSTALL_PREFIX=/usr/local/ ../opencv
 	# compile normally
-	# cmake -D BUILD_EXAMPLES=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D CMAKE_INSTALL_PREFIX=/usr/local/ ..
+	# cmake -D BUILD_EXAMPLES=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D CMAKE_INSTALL_PREFIX=/usr/local/ -D BUILD_opencv_world=OFF ../opencv
 
 	time make -j$(nproc --all)
 	sudo make install
 	```
 	Troubleshooting
+	- Can't build opencv and returns #include <Eigen/Core> no such file or directory?
+		- add `-DENABLE_PRECOMPILED_HEADERS=OFF`to your cmake command
+		- [Source](https://github.com/opencv/opencv/issues/14868)
 	- Having an error .../"grfmt_exr.hpp" fatal error: ImfChromaticities.h no such file or directory?
 		- Run `sudo apt-get install libopenexr-dev`
 		- [Source](https://answers.launchpad.net/ubuntu/+source/libxtst/+question/259047)
@@ -352,7 +374,7 @@ https://www.eprosima.com/index.php?option=com_ars&view=browses&layout=normal
 		# tar xzf eProsima_Fast-DDS-v2.12.1-Linux.tgz
 		# even though it errors "file corrupted", keep going
 		# sudo apt-get install git build-essential cmake libssl-dev libasio-dev libtinyxml2-dev openjdk-11-jre-headless python3
-		# sudo time ./install.sh --no-install-dependencies --no-security --build-cores $(nproc --all)
+		# time sudo ./install.sh --no-install-dependencies --no-security --build-cores $(nproc --all)
 		```
 
 		4. The library is now located at /usr/local/lib
@@ -440,8 +462,6 @@ Troubleshooting
 	- build 
 	- turn on back optimizations
 	- build (successful!)
-
-
 
 ### Additional References
 [set-imx8-env-AIO.txt](https://github.com/shunguang/HowTo/blob/master/set-imx8-env-AIO.txt)
