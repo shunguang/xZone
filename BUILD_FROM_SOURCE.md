@@ -242,6 +242,8 @@ sudo ln -s /opt/cmake/cmake-3.28.1-linux-aarch64/bin/cmake /usr/local/bin/cmake
 
 Upgrade gcc (7.0.0+?)
 Ubuntu 18.04
+By default ubuntu 18.04 uses gcc 7.4.0
+
 ```
 sudo apt-get install gcc-8 g++-8
 sudo ln /usr/bin/gcc-8 /usr/bin/gcc
@@ -251,6 +253,8 @@ sudo ln /usr/bin/g++-8 /usr/bin/g++
 # https://github.com/justadudewhohacks/opencv4nodejs/issues/645#issuecomment-574777079
 sudo ln -s /usr/local/include/opencv4/opencv2/ /usr/local/include/opencv2
 ```
+Additional Notes:
+gcc 8 doesn't fully support std::filesystem (partially implemented)
 
 1. set up dependencies
 	#### Ubuntu

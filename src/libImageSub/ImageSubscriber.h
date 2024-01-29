@@ -66,6 +66,19 @@ private:
             , frequency_(cfg->getCam().frequency_.start)
             , cfg_(cfg)
         {
+            boost::filesystem::path dir("logs");
+
+            if (!boost::filesystem::exists(dir)) {
+                std::cout << "logs folder doesn't Exist" << std::endl;
+
+                if (boost::filesystem::create_directory(dir)) {
+                    std::cout << "Successfully created logs folder" << std::endl;
+                }
+                else {
+                    std::cout << "Could not create logs folder." << std::endl;
+                }
+            }
+
             // https://stackoverflow.com/questions/38034033/c-localtime-this-function-or-variable-may-be-unsafe
             time_t t = std::time(nullptr);
 
@@ -105,19 +118,6 @@ private:
             const eprosima::fastdds::dds::SubscriptionMatchedStatus& info) override;
 
         void createNewLogFile() {
-            boost::filesystem::path dir("logs");
-
-            if (!boost::filesystem::exists(dir)) {
-                std::cout << "logs folder doesn't Exist" << std::endl;
-
-                if (boost::filesystem::create_directory(dir)) {
-                    std::cout << "Successfully created logs folder" << std::endl;
-                }
-                else {
-                    std::cout << "Could not create logs folder." << std::endl;
-                }
-            }
-            
             std::string height = std::to_string(cfg_->getCam().imgSz_.h);
             std::string width = std::to_string(cfg_->getCam().imgSz_.w);
             std::string transport = TransportNames[cfg_->getTransport() - 1];
