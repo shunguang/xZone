@@ -274,7 +274,7 @@ void ImagePublisher::PubListener::on_publication_matched(
 
 void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
     const int numSamples = cfgPtr_->getCam().numSamples_;
-    uint64_t tBeg = APP_TIME_CURRENT_MS;
+    uint64_t tBeg = APP_TIME_CURRENT_US;
     uint64_t tEnd = APP_TIME_CURRENT_MS;
     
     int frame_number = 1;

@@ -239,7 +239,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-ena
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<3.13"
-content-hash = "43e0e3e4a10c2480f155f0377b880008f09c6ffee63c6c88f2414012d8dcb799"
+content-hash = "b22b12d1ec63903cb94defe3bc82d0bf4ded0f854531f570cd94b0268c0a60a0"
 
 [metadata.files]
 contourpy = []
