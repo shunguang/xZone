@@ -186,7 +186,6 @@ DataWriterQos wqos = DATAWRITER_QOS_DEFAULT;
 wqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
 ```
 
-
 1/28/2024
 ***high priority***
 run jetson tx2
@@ -204,3 +203,20 @@ todo: use miliseconds for latency
 
 low priority
 write (bash) script to automate pipeline
+
+2/2/2024
+shift frequency values 
+
+error bar
+
+frequency udp and shared memory latency values have weird frequency
+
+calculate size dump
+w * h * 3 = number of bytes 
+
+store packets in memory
+
+shift values to the right
+
+automate transport script
+pass command line arguments to change transport layer overriding the value in the configuration file
