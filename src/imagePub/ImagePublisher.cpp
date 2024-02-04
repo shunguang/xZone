@@ -275,7 +275,7 @@ void ImagePublisher::PubListener::on_publication_matched(
 void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
     const int numSamples = cfgPtr_->getCam().numSamples_;
     uint64_t tBeg = APP_TIME_CURRENT_US;
-    uint64_t tEnd = APP_TIME_CURRENT_MS;
+    uint64_t tEnd = APP_TIME_CURRENT_US;
     
     int frame_number = 1;
     cv::Size size = cv::Size(1, 1);
@@ -295,7 +295,7 @@ void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
         frame_number++;
         size = cv::Size(1, size.height + 1);
 
-        tBeg = APP_TIME_CURRENT_MS;
+        tBeg = APP_TIME_CURRENT_US;
     }
 }
 
@@ -303,12 +303,12 @@ void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
 {
     const int numSamples = cfgPtr_->getCam().numSamples_;
     uint64_t delayMacrosecond = 1e6 / frequency_;
-    uint64_t tBeg = APP_TIME_CURRENT_MS;
-    uint64_t tEnd = APP_TIME_CURRENT_MS;
+    uint64_t tBeg = APP_TIME_CURRENT_US;
+    uint64_t tEnd = APP_TIME_CURRENT_US;
 
     std::cout << "sending " << numSamples << " samples at " << frequency_ << std::endl;
     for (int sample_num = 0; sample_num < numSamples; sample_num++) {
-        tBeg = APP_TIME_CURRENT_MS;
+        tBeg = APP_TIME_CURRENT_US;
 
         preparImgMsg(frame_number);
         acqImgMsg();
@@ -317,7 +317,7 @@ void ImagePublisher::runPacketSizeVariable(int max_packet_size) {
             std::cout << "unable to send sample #" << sample_num << std::endl;
         }
 
-        tEnd = APP_TIME_CURRENT_MS;
+        tEnd = APP_TIME_CURRENT_US;
         
         APP_SLEEP2(delayMacrosecond);
 
@@ -330,7 +330,7 @@ void ImagePublisher::acqImgMsg()
 {
     //image_.frame_number();
   // https://learnopencv.com/read-write-and-display-a-video-using-opencv-cpp-python/
-  image_.publisher_acq_time(APP_TIME_CURRENT_MS);
+  image_.publisher_acq_time(APP_TIME_CURRENT_US);
 }
 
 void ImagePublisher::preparImgMsg( const int frameNum )
@@ -345,7 +345,7 @@ bool ImagePublisher::publish(bool waitForListener, int sampleNum)
 {
     if (listener_.firstConnected_ || !waitForListener || listener_.matched_ > 0)
     {
-        image_.publisher_send_time(APP_TIME_CURRENT_MS);
+        image_.publisher_send_time(APP_TIME_CURRENT_US);
         writer_->write(&image_);
 
         if (cfgPtr_->getCam().numSamples_ - 1 == sampleNum) {

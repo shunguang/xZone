@@ -248,7 +248,7 @@ void ImageSubscriber::SubListener::on_data_available(  DataReader* reader)
     {
         if (info.instance_state == ALIVE_INSTANCE_STATE)
         {
-            image_.subscriber_recieve_time(APP_TIME_CURRENT_MS);
+            image_.subscriber_recieve_time(APP_TIME_CURRENT_US);
 
             latencyStat_.addSample(image_.subscriber_recieve_time() - image_.publisher_send_time());
 
