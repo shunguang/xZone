@@ -197,7 +197,6 @@ bool ImageSubscriber::init(
 
 ImageSubscriber::~ImageSubscriber()
 {
-   
     if (reader_ != nullptr)
     {
         subscriber_->delete_datareader(reader_);
@@ -211,6 +210,7 @@ ImageSubscriber::~ImageSubscriber()
         participant_->delete_subscriber(subscriber_);
     }
     DomainParticipantFactory::get_instance()->delete_participant(participant_);
+    delete type_;
 }
 
 void ImageSubscriber::SubListener::on_subscription_matched(
