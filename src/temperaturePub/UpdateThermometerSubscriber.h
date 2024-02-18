@@ -99,7 +99,7 @@ private:
 
     eprosima::fastdds::dds::DataReader* reader_;
 
-    eprosima::fastdds::dds::TypeSupport type_;
+    std::shared_ptr<eprosima::fastdds::dds::TypeSupport> type_;
 
     SubListener listener_;
 };

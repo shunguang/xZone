@@ -31,9 +31,10 @@ UpdateThermometerSubscriber::UpdateThermometerSubscriber(std::shared_ptr<std::sh
     , subscriber_(nullptr)
     , topic_(nullptr)
     , reader_(nullptr)
-    , type_(new UpdateThermometerPubSubType())
     , listener_(mutexPtr, *this)
 {
+    type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<UpdateThermometerPubSubType>());
+
     cfgThermometerPtr_ = cfgThermometerPtr;
 }
 
@@ -58,7 +59,7 @@ bool UpdateThermometerSubscriber::init(
     }
 
     //REGISTER THE TYPE
-    type_.register_type(participant_);
+    type_->register_type(participant_);
 
     //CREATE THE SUBSCRIBER
     SubscriberQos sqos = SUBSCRIBER_QOS_DEFAULT;

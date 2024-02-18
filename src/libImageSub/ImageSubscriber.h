@@ -150,7 +150,7 @@ private:
 
     app::CfgPtr  cfg_;
 
-   // eprosima::fastdds::dds::TypeSupport type_;
+   // std::shared_ptr<eprosima::fastdds::dds::TypeSupport> type_;
 };
 
 void createImageSubscriber(app::CfgPtr cfg, bool use_environment_qos);

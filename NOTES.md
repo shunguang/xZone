@@ -220,3 +220,11 @@ shift values to the right
 
 automate transport script
 pass command line arguments to change transport layer overriding the value in the configuration file
+
+# 2/16/24
+shared memory move to the right
+udp move to the left
+
+look at fast-dds documentation 
+
+if memory is big enough, there are garenteed there are no packets lost

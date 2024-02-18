@@ -32,9 +32,10 @@ UpdateCamSubscriber::UpdateCamSubscriber(std::shared_ptr<std::shared_mutex> mute
     , subscriber_(nullptr)
     , topic_(nullptr)
     , reader_(nullptr)
-    , type_(new UpdateCamPubSubType())
     , listener_(mutexPtr, *this)
 {
+    type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<UpdateCamPubSubType>());
+    
     tranport_ = cfgPtr->getTransport();
     cfgCamPtr_ = std::make_shared<CfgCam>(cfgPtr->getCam());
 }
@@ -60,7 +61,7 @@ bool UpdateCamSubscriber::init(
     }
 
     //REGISTER THE TYPE
-    type_.register_type(participant_);
+    type_->register_type(participant_);
 
     //CREATE THE SUBSCRIBER
     SubscriberQos sqos = SUBSCRIBER_QOS_DEFAULT;

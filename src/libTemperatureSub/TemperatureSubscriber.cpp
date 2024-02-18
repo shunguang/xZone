@@ -30,8 +30,8 @@ TemperatureSubscriber::TemperatureSubscriber()
     , subscriber_(nullptr)
     , topic_(nullptr)
     , reader_(nullptr)
-    , type_(new TemperaturePubSubType())
 {
+    type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<TemperaturePubSubType>());
 }
 
 bool TemperatureSubscriber::init(
@@ -55,7 +55,7 @@ bool TemperatureSubscriber::init(
     }
 
     //REGISTER THE TYPE
-    type_.register_type(participant_);
+    type_->register_type(participant_);
 
     //CREATE THE SUBSCRIBER
     SubscriberQos sqos = SUBSCRIBER_QOS_DEFAULT;

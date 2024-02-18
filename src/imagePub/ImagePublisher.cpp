@@ -41,6 +41,9 @@ ImagePublisher::ImagePublisher(std::shared_ptr<std::shared_mutex> mutexPtr, CfgP
     , type_(new ImagePubSubType())
     , stop_(false)
 {
+    // what does this do
+    //type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<ImagePubSubType>());
+    std::cout << "type_: " << type_ << std::endl;
 
     cfgPtr_ = cfgPtr;
     mutexPtr_ = mutexPtr;
@@ -174,10 +177,10 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
         publisher_->get_default_datawriter_qos(wqos);
     }
     
-    wqos.history().kind = KEEP_ALL_HISTORY_QOS;
-    wqos.history().depth = 30;
-    wqos.resource_limits().max_samples = 5000;
-    wqos.resource_limits().allocated_samples = 100;
+    wqos.history().kind = KEEP_LAST_HISTORY_QOS;
+    wqos.history().depth = 1;
+    wqos.resource_limits().max_samples = 1;
+    wqos.resource_limits().allocated_samples = 1;
     wqos.reliable_writer_qos().times.heartbeatPeriod.seconds = 2;
     wqos.reliable_writer_qos().times.heartbeatPeriod.nanosec = 200 * 1000 * 1000;
     wqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;
@@ -209,6 +212,8 @@ ImagePublisher::~ImagePublisher()
     {
         participant_->delete_topic(topic_);
     }
+   
+    //delete type_.get();
     DomainParticipantFactory::get_instance()->delete_participant(participant_);
 
    // std::cout << "delete_participant." << std::endl;

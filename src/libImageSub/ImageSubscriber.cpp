@@ -39,10 +39,11 @@ ImageSubscriber::ImageSubscriber(CfgPtr cfg)
     , subscriber_(nullptr)
     , topic_(nullptr)
     , reader_(nullptr)
+    , type_(new ImagePubSubType())
     , cfg_(cfg)
     , listener_(SubListener(cfg))
-    , type_(new ImagePubSubType())
-{}
+{
+}
 
 bool ImageSubscriber::init(
         bool use_env)
@@ -178,10 +179,10 @@ bool ImageSubscriber::init(
     //CREATE THE DATAREADER
 
     DataReaderQos rqos;
-    rqos.history().kind = eprosima::fastdds::dds::KEEP_ALL_HISTORY_QOS;
-    rqos.history().depth = 30;
-    rqos.resource_limits().max_samples = 5000;
-    rqos.resource_limits().allocated_samples = 100;
+    rqos.history().kind = eprosima::fastdds::dds::KEEP_LAST_HISTORY_QOS;
+    rqos.history().depth = 1;
+    rqos.resource_limits().max_samples = 1;
+    rqos.resource_limits().allocated_samples = 1;
     rqos.reliability().kind = eprosima::fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
     rqos.durability().kind = eprosima::fastdds::dds::TRANSIENT_LOCAL_DURABILITY_QOS;
 
@@ -210,7 +211,8 @@ ImageSubscriber::~ImageSubscriber()
         participant_->delete_subscriber(subscriber_);
     }
     DomainParticipantFactory::get_instance()->delete_participant(participant_);
-    delete type_;
+
+    delete type_.get();
 }
 
 void ImageSubscriber::SubListener::on_subscription_matched(

@@ -90,7 +90,7 @@ private:
         uint32_t number,
         uint32_t sleep);
 
-    eprosima::fastdds::dds::TypeSupport type_;
+    std::shared_ptr<eprosima::fastdds::dds::TypeSupport> type_;
 };
 
 void createUpdateHygrometerPublisher(bool use_environment_qos);

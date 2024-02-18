@@ -35,9 +35,9 @@ HumidityPublisher::HumidityPublisher(std::shared_ptr<std::shared_mutex> mutexPtr
     , publisher_(nullptr)
     , topic_(nullptr)
     , writer_(nullptr)
-    , type_(new HumidityPubSubType())
     , stop_(false)
 {
+    type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<HumidityPubSubType>());
 
     cfgHygrometerPtr_ = cfgHygrometerPtr;
     mutexPtr_ = mutexPtr;
@@ -73,7 +73,7 @@ bool HumidityPublisher::init(bool use_env)
     }
 
     //REGISTER THE TYPE
-    type_.register_type(participant_);
+    type_->register_type(participant_);
 
     //CREATE THE PUBLISHER
     PublisherQos pubqos = PUBLISHER_QOS_DEFAULT;

@@ -34,9 +34,9 @@ UpdateHygrometerPublisher::UpdateHygrometerPublisher()
     , publisher_(nullptr)
     , topic_(nullptr)
     , writer_(nullptr)
-    , type_(new UpdateCamPubSubType())
     , stop_(false)
 {
+    std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<UpdateHygrometerPubSubType>());
 }
 
 bool UpdateHygrometerPublisher::init(bool use_env)
@@ -62,7 +62,7 @@ bool UpdateHygrometerPublisher::init(bool use_env)
     }
 
     //REGISTER THE TYPE
-    type_.register_type(participant_);
+    type_->register_type(participant_);
 
     //CREATE THE PUBLISHER
     PublisherQos pubqos = PUBLISHER_QOS_DEFAULT;

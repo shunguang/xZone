@@ -30,6 +30,8 @@ using namespace app;
 
 int main(int argc, char* argv[])
 {
+
+	std::cout << "inital path: " << boost::filesystem::initial_path() << std::endl;
 	/*std::cout << "Have " << argc << " arguments:\n";
 	for (int i = 0; i < argc; ++i) {
 		std::cout << argv[i] << "\n";

@@ -30,8 +30,8 @@ HumiditySubscriber::HumiditySubscriber()
     , subscriber_(nullptr)
     , topic_(nullptr)
     , reader_(nullptr)
-    , type_(new HumidityPubSubType())
 {
+    type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<HumidityPubSubType>());
 }
 
 bool HumiditySubscriber::init(
@@ -55,7 +55,7 @@ bool HumiditySubscriber::init(
     }
 
     //REGISTER THE TYPE
-    type_.register_type(participant_);
+    type_->register_type(participant_);
 
     //CREATE THE SUBSCRIBER
     SubscriberQos sqos = SUBSCRIBER_QOS_DEFAULT;
