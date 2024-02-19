@@ -53,6 +53,15 @@ def addLegend(pattern: str, transport: str, color: str):
         df = pd.read_csv(file, engine="pyarrow")
         # filter out values that are 3 standard deviations away from the mean
         df = df[np.abs(df["latency"]-df["latency"].mean()) <= (3*df["latency"].std())]
+
+        # match transport:
+        #     case "Shared Memory":
+        #         freq = int(freq) + 5
+        #     case "TCP":
+        #         freq = int(freq) - 5
+        #     case "UDP":
+        #         freq = int(freq)
+
         frequencies.append(freq)
         convertMicroSecondstoMiliseconds = lambda x: x / 1000
         latencies.append(convertMicroSecondstoMiliseconds(df["latency"]).mean())
@@ -66,8 +75,8 @@ def addLegend(pattern: str, transport: str, color: str):
         
         err.append(convertMicroSecondstoMiliseconds(df["latency"]).std())
     
-    latency.errorbar(frequencies, latencies, yerr=err, fmt="o", color=color, label=transport)
-    packet_loss.scatter(frequencies, packetLoss, color=color, label=transport)
+    latency.errorbar(frequencies, latencies, yerr=err, fmt="o", color=color, label=transport, alpha=0.5)
+    packet_loss.scatter(frequencies, packetLoss, color=color, label=transport, alpha=0.5)
 
 addLegend(f"{folder}/*/*TCP*.csv", "TCP", "tab:purple")
 addLegend(f"{folder}/*/*UDP*.csv", "UDP", "tab:green")
@@ -85,5 +94,5 @@ st.set_y(0.95)
 fig.subplots_adjust(top=0.85)
 
 #                         height width
-fig.savefig(f'{machine_name}_{image_height}_{image_width}.png')
+fig.savefig(f'{machine_name}_{image_height}_{image_width}.png', dpi=300)
 print("generated the graph")
