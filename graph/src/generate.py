@@ -52,15 +52,7 @@ def addLegend(pattern: str, transport: str, color: str):
         [freq, height, width] = re.findall("\\d+", re.split(r"\/|\\", file)[-1])
         df = pd.read_csv(file, engine="pyarrow")
         # filter out values that are 3 standard deviations away from the mean
-        df = df[np.abs(df["latency"]-df["latency"].mean()) <= (3*df["latency"].std())]
-
-        # match transport:
-        #     case "Shared Memory":
-        #         freq = int(freq) + 5
-        #     case "TCP":
-        #         freq = int(freq) - 5
-        #     case "UDP":
-        #         freq = int(freq)
+        # df = df[np.abs(df["latency"]-df["latency"].mean()) <= (3*df["latency"].std())]
 
         frequencies.append(freq)
         convertMicroSecondstoMiliseconds = lambda x: x / 1000
@@ -69,10 +61,16 @@ def addLegend(pattern: str, transport: str, color: str):
         # https://stackoverflow.com/a/69731291
         # Calculating packet loss
         condition = df["frame number"].eq(df["frame number"].shift()+1)
-        elseConditionReturnValue = df["frame number"]-df["frame number"].shift()
+        elseConditionReturnValue = df["frame number"]-df["frame number"].shift() # find difference
         arr = np.where(condition, 'True' , elseConditionReturnValue)
-        packetLoss.append(sum(map(lambda n: int(float(n)), arr[arr != "True"][1:])))
-        
+        # print(f"transport: {transport} frqeuency: {freq}")
+        # print(([index for (index, item) in enumerate(arr.tolist()) if item.replace(".", "").isnumeric()]))
+        packetLoss.append(sum(map(lambda n: int(float(n)-1), arr[arr != "True"][1:])))
+        # frames = df["frame number"].tolist()
+        # for index in range(0, len(frames)-2):
+        #     if frames[index]+1 != frames[index+1]:
+        #         print(f"transport: {transport} freq: {freq} jumped: {frames[index]} to {frames[index+1]} at index: {index}")
+
         err.append(convertMicroSecondstoMiliseconds(df["latency"]).std())
     
     latency.errorbar(frequencies, latencies, yerr=err, fmt="o", color=color, label=transport, alpha=0.5)

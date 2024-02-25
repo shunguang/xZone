@@ -180,9 +180,9 @@ bool ImageSubscriber::init(
 
     DataReaderQos rqos;
     rqos.history().kind = eprosima::fastdds::dds::KEEP_LAST_HISTORY_QOS;
-    rqos.history().depth = 1;
-    rqos.resource_limits().max_samples = 1;
-    rqos.resource_limits().allocated_samples = 1;
+    rqos.history().depth = 5;
+    rqos.resource_limits().max_samples = 5;
+    rqos.resource_limits().allocated_samples = 5;
     rqos.reliability().kind = eprosima::fastdds::dds::BEST_EFFORT_RELIABILITY_QOS;
     rqos.durability().kind = eprosima::fastdds::dds::TRANSIENT_LOCAL_DURABILITY_QOS;
 
