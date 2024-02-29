@@ -16,7 +16,7 @@
 #define UPDATEHYGROMETERPUBLISHER_H_
 
 #include "libUtil/Util.h"
-#include "libMsg/UpdateCamPubSubTypes.h"
+#include "libMsg/UpdateHygrometerPubSubTypes.h"
 #include "libCfg/Cfg.h"
 
 #include <fastdds/dds/publisher/DataWriterListener.hpp>
@@ -50,7 +50,7 @@ private:
 
     CfgCamPtr cfgCamPtr_;
 
-    UpdateCam updateCam_;
+    UpdateHygrometer updateHygrometer_;
 
     eprosima::fastdds::dds::DomainParticipant* participant_;
 

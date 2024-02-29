@@ -127,7 +127,7 @@ private:
     }
     listener_;
 
-    eprosima::fastdds::dds::TypeSupport type_;
+    std::shared_ptr<eprosima::fastdds::dds::TypeSupport> type_;
 
 };
 #endif /* IMAGEPUBLISHER_H_ */

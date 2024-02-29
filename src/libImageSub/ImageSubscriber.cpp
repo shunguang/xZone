@@ -39,10 +39,11 @@ ImageSubscriber::ImageSubscriber(CfgPtr cfg)
     , subscriber_(nullptr)
     , topic_(nullptr)
     , reader_(nullptr)
-    , type_(new ImagePubSubType())
+    , type_()
     , cfg_(cfg)
     , listener_(SubListener(cfg))
-{
+{   
+    type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<ImagePubSubType>());;
 }
 
 bool ImageSubscriber::init(
@@ -57,9 +58,6 @@ bool ImageSubscriber::init(
         factory->load_profiles();
         factory->get_default_participant_qos(pqos);
     }
-
-    // Set initial peers.
-    // std::cout << "Using TCP as transport " << cfg->getTransport()  << std::endl;
 
     switch (cfg_->getTransport()) {
 
@@ -128,7 +126,7 @@ bool ImageSubscriber::init(
     }
 
     //REGISTER THE TYPE
-    type_.register_type(participant_);
+    type_->register_type(participant_);
 
     //CREATE THE SUBSCRIBER
     SubscriberQos sqos = SUBSCRIBER_QOS_DEFAULT;

@@ -38,12 +38,10 @@ ImagePublisher::ImagePublisher(std::shared_ptr<std::shared_mutex> mutexPtr, CfgP
     , publisher_(nullptr)
     , topic_(nullptr)
     , writer_(nullptr)
-    , type_(new ImagePubSubType())
+    , type_(nullptr)
     , stop_(false)
 {
-    // what does this do
-    //type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<ImagePubSubType>());
-    std::cout << "type_: " << type_ << std::endl;
+    type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<ImagePubSubType>());
 
     cfgPtr_ = cfgPtr;
     mutexPtr_ = mutexPtr;
@@ -147,7 +145,7 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
         return false;
     }
 
-    type_.register_type(participant_);
+    type_->register_type(participant_);
 
     PublisherQos pubqos = PUBLISHER_QOS_DEFAULT;
   
@@ -178,9 +176,9 @@ bool ImagePublisher::init(CfgPtr cfg, bool use_env)
     }
     
     wqos.history().kind = KEEP_LAST_HISTORY_QOS;
-    wqos.history().depth = 1;
-    wqos.resource_limits().max_samples = 1;
-    wqos.resource_limits().allocated_samples = 1;
+    wqos.history().depth = 5;
+    wqos.resource_limits().max_samples = 5;
+    wqos.resource_limits().allocated_samples = 5;
     wqos.reliable_writer_qos().times.heartbeatPeriod.seconds = 2;
     wqos.reliable_writer_qos().times.heartbeatPeriod.nanosec = 200 * 1000 * 1000;
     wqos.reliability().kind = BEST_EFFORT_RELIABILITY_QOS;

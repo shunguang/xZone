@@ -36,7 +36,7 @@ UpdateHygrometerPublisher::UpdateHygrometerPublisher()
     , writer_(nullptr)
     , stop_(false)
 {
-    std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<UpdateHygrometerPubSubType>());
+    type_ = std::dynamic_pointer_cast<eprosima::fastdds::dds::TypeSupport>(std::shared_ptr<UpdateHygrometerPubSubType>());
 }
 
 bool UpdateHygrometerPublisher::init(bool use_env)
